@@ -9,12 +9,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
         drawer.addDrawerListener(toggle);
 
         toggle.syncState();
+
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -92,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
                         case R.id.nav_ask:
                             selectedFragment = new AskFragment();
                             break;
-                        case R.id.nav_item_3:
-                            selectedFragment = new Item3Fragment();
+                        case R.id.nav_recent:
+                            selectedFragment = new RecentFragment();
                             break;
-                        case R.id.nav_item_4:
-                            selectedFragment = new Item4Fragment();
+                        case R.id.nav_chat:
+                            selectedFragment = new ChatFragment();
                             break;
                     }
 
