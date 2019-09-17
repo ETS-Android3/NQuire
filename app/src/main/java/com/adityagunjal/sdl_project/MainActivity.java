@@ -8,17 +8,24 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.adityagunjal.sdl_project.ui.chat.ChatFragment;
+import com.adityagunjal.sdl_project.ui.home.HomeFragment;
+import com.adityagunjal.sdl_project.ui.ask.AskFragment;
+import com.adityagunjal.sdl_project.ui.recent.RecentFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
+    private FirebaseDatabase firebaseDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(navListener);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
@@ -76,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
                         case R.id.drawable_nav_settings:
                             break;
                         case R.id.drawable_nav_logout:
+                            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                            finish();
                             break;
                     }
                     return true;

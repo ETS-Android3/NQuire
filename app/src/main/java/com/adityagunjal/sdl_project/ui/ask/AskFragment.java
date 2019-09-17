@@ -1,4 +1,4 @@
-package com.adityagunjal.sdl_project;
+package com.adityagunjal.sdl_project.ui.ask;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,10 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class RecentFragment extends Fragment {
+import com.adityagunjal.sdl_project.R;
+
+public class AskFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recent, container, false);
+        return inflater.inflate(R.layout.fragment_ask, container, false);
     }
 }

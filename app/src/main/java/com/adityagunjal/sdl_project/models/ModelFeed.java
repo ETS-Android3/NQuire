@@ -1,10 +1,12 @@
-package com.adityagunjal.sdl_project;
+package com.adityagunjal.sdl_project.models;
+
+import com.adityagunjal.sdl_project.R;
 
 public class ModelFeed {
-    int id, likes, comments, profile_pic;
+    int id, likes, comments, profile_pic, dislikes;
     String name, question, lastUpdate, answer;
 
-    public ModelFeed(int id, int likes, int comments, int profile_pic, String name, String question, String lastUpdate, String answer){
+    public ModelFeed(int id, int likes,int dislikes, int comments, int profile_pic, String name, String question, String lastUpdate, String answer){
         this.id = id;
         this.likes = likes;
         this.comments = comments;
@@ -12,6 +14,7 @@ public class ModelFeed {
         this.name = name;
         this.question = question;
         this.lastUpdate = lastUpdate;
+        this.dislikes = dislikes;
         this.answer = answer;
     }
 
@@ -19,6 +22,7 @@ public class ModelFeed {
         this.id = 1;
         this.likes = 0;
         this.comments = 0;
+        this.dislikes = 0;
         this.profile_pic = R.drawable.ic_profile_pic;
         this.name = "Username";
         this.question = "This is Question";

@@ -1,6 +1,7 @@
-package com.adityagunjal.sdl_project;
+package com.adityagunjal.sdl_project.ui.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,14 +11,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
+import com.adityagunjal.sdl_project.R;
+import com.adityagunjal.sdl_project.ShowAnswerActivity;
+import com.adityagunjal.sdl_project.models.ModelFeed;
 
 import java.util.ArrayList;
 
 public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> {
 
     Context context;
-    ArrayList<ModelFeed> modelFeedArrayList = new ArrayList<>();
+    ArrayList<ModelFeed> modelFeedArrayList;
 
     public AdapterFeed(Context context, ArrayList<ModelFeed> modelFeedArrayList){
         this.context = context;
@@ -45,6 +48,13 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
         holder.lastUpdated.setText(modelFeed.getLastUpdate());
 
         holder.profilePic.setImageResource(R.drawable.ic_profile_pic);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                context.startActivity(new Intent(view.getContext(), ShowAnswerActivity.class));
+            }
+        });
     }
 
     @Override
@@ -54,11 +64,15 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView name, answer, question, lastUpdated;
+        final Context itemViewContext;
+
+        TextView name, answer, question, lastUpdated, likes, dislikes, comments;
         ImageView profilePic;
 
         public MyViewHolder(View itemView) {
             super(itemView);
+
+            itemViewContext = itemView.getContext();
 
             profilePic = (ImageView) itemView.findViewById(R.id.card_profile_pic);
 
@@ -66,7 +80,9 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
             answer = (TextView) itemView.findViewById(R.id.card_answer_text);
             question = (TextView) itemView.findViewById(R.id.card_question);
             lastUpdated = (TextView) itemView.findViewById(R.id.card_update_info);
+            likes = itemView.findViewById(R.id.feed_answer_like);
+            dislikes = itemView.findViewById(R.id.feed_answer_dislike);
+            comments = itemView.findViewById(R.id.feed_answer_comment);
         }
-
     }
 }
