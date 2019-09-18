@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adityagunjal.sdl_project.R;
+import com.adityagunjal.sdl_project.adapters.AdapterAnswer;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
 
 import java.util.ArrayList;
