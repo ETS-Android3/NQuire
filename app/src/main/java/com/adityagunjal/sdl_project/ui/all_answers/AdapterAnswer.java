@@ -40,8 +40,8 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final ModelAnswer modelAnswer = modelAnswerArrayList.get(position);
 
-        holder.likes.setText(Integer.toString(modelAnswer.getLikes()));
-        holder.dislikes.setText(Integer.toString(modelAnswer.getDislikes()));
+        holder.likes.setText(Integer.toString(modelAnswer.getUpvotes()));
+        holder.dislikes.setText(Integer.toString(modelAnswer.getDownvotes()));
         holder.comments.setText(Integer.toString(modelAnswer.getComments()) + " comments");
         holder.answer.setText(modelAnswer.getAnswer());
         holder.lastUpdated.setText(modelAnswer.getLastUpdated());

@@ -1,20 +1,22 @@
 package com.adityagunjal.sdl_project.models;
 
 public class ModelAnswer {
-    private int profile_pic;
-    private String username;
-    private String lastUpdated;
-    private String Answer;
-    private int id, likes, dislikes, comments;
+    public int profile_pic;
+    public String username;
+    public String lastUpdated;
+    public String Answer;
+    public int id, upvotes, downvotes, comments;
 
-    public ModelAnswer(int id, int profile_pic, String username, String lastUpdated, String answer, int likes, int dislikes, int comments) {
+    public ModelAnswer(){}
+
+    public ModelAnswer(int id, int profile_pic, String username, String lastUpdated, String answer, int upvotes, int downvotes, int comments) {
         this.profile_pic = profile_pic;
         this.username = username;
         this.lastUpdated = lastUpdated;
         this.Answer = answer;
         this.id = id;
-        this.likes = likes;
-        this.dislikes = dislikes;
+        this.upvotes = upvotes;
+        this.downvotes = downvotes;
         this.comments = comments;
     }
 
@@ -58,20 +60,20 @@ public class ModelAnswer {
         this.id = id;
     }
 
-    public int getLikes() {
-        return likes;
+    public int getUpvotes() {
+        return upvotes;
     }
 
-    public void setLikes(int likes) {
-        this.likes = likes;
+    public void setUpvotes(int upvotes) {
+        this.upvotes = upvotes;
     }
 
-    public int getDislikes() {
-        return dislikes;
+    public int getDownvotes() {
+        return downvotes;
     }
 
-    public void setDislikes(int dislikes) {
-        this.dislikes = dislikes;
+    public void setDownvotes(int downvotes) {
+        this.downvotes = downvotes;
     }
 
     public int getComments() {

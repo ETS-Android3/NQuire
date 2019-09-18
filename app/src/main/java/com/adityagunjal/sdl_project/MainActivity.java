@@ -20,17 +20,20 @@ import com.adityagunjal.sdl_project.ui.ask.AskFragment;
 import com.adityagunjal.sdl_project.ui.recent.RecentFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
-    private FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(bottomNavListener);
@@ -84,7 +87,11 @@ public class MainActivity extends AppCompatActivity {
                         case R.id.drawable_nav_settings:
                             break;
                         case R.id.drawable_nav_logout:
-                            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                            firebaseAuth.signOut();
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(i);
                             finish();
                             break;
                     }

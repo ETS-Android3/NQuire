@@ -18,7 +18,6 @@ public class LoginActivity extends AppCompatActivity {
     LoginFragment loginFragment;
     SinupFragment sinupFragment;
     ForgotPasswordFragment forgotPasswordFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,13 +42,8 @@ public class LoginActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.activity_login_frame_container, currentFragment).commit();
     }
 
-    public void onForgotPasswordClick(View view){
+    public void onForgotPasswordClick(View view) {
         currentFragment = forgotPasswordFragment;
         getSupportFragmentManager().beginTransaction().replace(R.id.activity_login_frame_container, currentFragment).commit();
     }
-
-    public void onLoginButtonClick(View view){
-        this.finish();
-    }
-
 }
