@@ -2,10 +2,12 @@ package com.adityagunjal.sdl_project.models;
 
 public class ModelComment {
 
-    private int commentProfilePic;
-    private String username;
-    private String lastUpdated;
-    private String comment;
+    public int commentProfilePic;
+    public String username;
+    public String lastUpdated;
+    public String comment;
+
+    public ModelComment(){}
 
     public ModelComment(int commentProfilePic, String username, String lastUpdated, String comment){
         this.commentProfilePic = commentProfilePic;
