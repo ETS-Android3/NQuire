@@ -1,20 +1,23 @@
 package com.adityagunjal.sdl_project.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adityagunjal.sdl_project.AnswerQuestionActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
 
 import java.util.ArrayList;
 
-public class AdapterQuestion extends RecyclerView.Adapter<AdapterQuestion.MyViewHolder>{
+public class AdapterQuestion extends RecyclerView.Adapter<AdapterQuestion.MyViewHolder> implements View.OnClickListener {
 
     Context context;
     ArrayList<ModelQuestion> modelQuestionArrayList;
@@ -29,6 +32,12 @@ public class AdapterQuestion extends RecyclerView.Adapter<AdapterQuestion.MyView
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.question_card, parent, false);
+
+        ImageView answerImage = view.findViewById(R.id.answer_question_symbol);
+        TextView answerText = view.findViewById(R.id.recent_answer_text);
+
+        answerImage.setOnClickListener(this);
+        answerText.setOnClickListener(this);
 
         MyViewHolder myViewHolder = new MyViewHolder(view);
 
@@ -49,6 +58,14 @@ public class AdapterQuestion extends RecyclerView.Adapter<AdapterQuestion.MyView
     @Override
     public int getItemCount() {
         return modelQuestionArrayList.size();
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        if(view.getId() == R.id.answer_question_symbol || view.getId() == R.id.recent_answer_text){
+            context.startActivity(new Intent(context, AnswerQuestionActivity.class));
+        }
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{

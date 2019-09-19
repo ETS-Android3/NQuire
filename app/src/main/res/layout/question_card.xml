@@ -2,66 +2,82 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="15dp">
+    android:layout_marginBottom="5dp">
 
-    <TextView
-        android:id="@+id/username"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Asked by Username"
-        android:textColor="@color/dark_grey"
-        android:textSize="13sp"/>
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/question"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Question"
-        android:textSize="30sp"
-        android:textColor="@color/black"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/question_date"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:text="Asked on 12/12/2012"/>
-
-    <RelativeLayout
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/no_of_answers"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:padding="15dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:text="No Answers Yet" />
+            android:orientation="vertical">
 
-        <ImageView
-            android:layout_toEndOf="@+id/no_of_answers"
-            android:id="@+id/answer_question_symbol"
-            android:layout_width="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_answer_question_icon"/>
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Asked by Username"
+                android:textColor="@color/dark_grey"
+                android:textSize="13sp"/>
 
-        <TextView
-            android:layout_marginLeft="5dp"
-            android:layout_toEndOf="@id/answer_question_symbol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:layout_centerVertical="true"
-            android:text="Answer"
-            />
+            <TextView
+                android:id="@+id/question"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Question"
+                android:textSize="30sp"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/question_date"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:text="Asked on 12/12/2012"/>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/no_of_answers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:text="No Answers Yet" />
+
+                <ImageView
+                    android:layout_toEndOf="@+id/no_of_answers"
+                    android:id="@+id/answer_question_symbol"
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_answer_question_icon"
+                    android:clickable="true" />
+
+                <TextView
+                    android:id="@+id/recent_answer_text"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toEndOf="@id/answer_question_symbol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:text="Answer" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

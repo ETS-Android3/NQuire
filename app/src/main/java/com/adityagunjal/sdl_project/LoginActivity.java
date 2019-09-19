@@ -10,6 +10,7 @@ import android.view.View;
 import com.adityagunjal.sdl_project.ui.login_sinup.ForgotPasswordFragment;
 import com.adityagunjal.sdl_project.ui.login_sinup.LoginFragment;
 import com.adityagunjal.sdl_project.ui.login_sinup.SinupFragment;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
@@ -22,6 +23,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
 
         loginFragment = new LoginFragment();
         sinupFragment = new SinupFragment();

@@ -55,6 +55,12 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
     public void onClick(View view) {
         loginUser();
     }
@@ -82,9 +88,8 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
                                             public void onComplete(@NonNull Task<AuthResult> task) {
                                                 if(task.isSuccessful()){
                                                     Intent i = new Intent(getActivity(), MainActivity.class);
-                                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                                     startActivity(i);
+                                                    getActivity().finish();
                                                 }else{
                                                     Log.i("Login","Invalid Password");
                                                     Toast.makeText(getActivity(), "Wrong Password", Toast.LENGTH_SHORT).show();
@@ -95,9 +100,6 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
                             catch (Exception e){
                                 Log.i("Login","Invalid Username");
                                 Toast.makeText(getActivity(), "Invalid Username", Toast.LENGTH_SHORT).show();
-                            }
-                            finally {
-                                progressBar.setVisibility(View.GONE);
                             }
                         }
 
