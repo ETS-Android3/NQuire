@@ -3,21 +3,14 @@ package com.adityagunjal.sdl_project;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import android.app.SearchManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,8 +23,7 @@ import com.adityagunjal.sdl_project.ui.draft.DraftFragment;
 import com.adityagunjal.sdl_project.ui.home.HomeFragment;
 import com.adityagunjal.sdl_project.ui.ask.AskFragment;
 import com.adityagunjal.sdl_project.ui.recent.RecentFragment;
-import com.adityagunjal.sdl_project.ui.search.SearchFragment;
-import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -96,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         toggle.syncState();
 
         setUser();
+
     }
 
     @Override
@@ -213,11 +207,6 @@ public class MainActivity extends AppCompatActivity {
 
         final CircleImageView circleImageView = findViewById(R.id.drawer_icon);
 
-        Glide.with(getApplicationContext())
-                .load("https://i.pinimg.com/originals/27/cb/6a/27cb6a7f7ba7f5744d780a1386a6b0e3.jpg")
-                .fitCenter()
-                .into(circleImageView);
-
         FirebaseDatabase.getInstance().getReference("Users")
                 .child(userID)
                 .addValueEventListener(new ValueEventListener() {
@@ -232,7 +221,16 @@ public class MainActivity extends AppCompatActivity {
                             CircleImageView navHeaderProfile = findViewById(R.id.imageView);
                             navHeaderProfile.setImageResource(R.drawable.ic_profile_icon);
                         }else{
-
+                            FirebaseStorage.getInstance().getReference(user.getImagePath())
+                                    .getBytes(1024 * 1024)
+                                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                        @Override
+                                        public void onSuccess(byte[] bytes) {
+                                            circleImageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                            CircleImageView navHeaderProfile = findViewById(R.id.imageView);
+                                            navHeaderProfile.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                        }
+                                    });
                         }
                     }
 
