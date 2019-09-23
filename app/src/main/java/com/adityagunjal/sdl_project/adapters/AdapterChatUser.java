@@ -1,6 +1,7 @@
 package com.adityagunjal.sdl_project.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adityagunjal.sdl_project.ChatActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.models.ModelChatUser;
 
@@ -31,6 +33,12 @@ public class AdapterChatUser extends RecyclerView.Adapter<AdapterChatUser.MyView
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_chat, parent, false);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                context.startActivity(new Intent(context, ChatActivity.class));
+            }
+        });
         return new MyViewHolder(view);
     }
 

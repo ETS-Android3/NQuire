@@ -34,8 +34,6 @@ public class HomeFragment extends Fragment {
         adapterFeed = new AdapterFeed(getActivity(), modelFeedArrayList);
         recyclerView.setAdapter(adapterFeed);
 
-
-
         populateRecyclerView();
 
         return  view;

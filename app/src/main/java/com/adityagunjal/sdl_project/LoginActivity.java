@@ -5,11 +5,13 @@ import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.adityagunjal.sdl_project.ui.login_sinup.ForgotPasswordFragment;
 import com.adityagunjal.sdl_project.ui.login_sinup.LoginFragment;
 import com.adityagunjal.sdl_project.ui.login_sinup.SinupFragment;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -24,11 +26,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if(FirebaseAuth.getInstance().getCurrentUser() != null){
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
-
         loginFragment = new LoginFragment();
         sinupFragment = new SinupFragment();
         forgotPasswordFragment = new ForgotPasswordFragment();
@@ -36,6 +33,15 @@ public class LoginActivity extends AppCompatActivity {
         currentFragment = loginFragment;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.activity_login_frame_container, currentFragment).commit();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
     }
 
     public void onSignUpClick(View view){

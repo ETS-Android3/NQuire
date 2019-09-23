@@ -46,4 +46,9 @@ public class ChatFragment extends Fragment {
         modelChatUserArrayList.add(new ModelChatUser("Aditya Gunjal", "Good Night", "1 hr ago", "Default"));
         modelChatUserArrayList.add(new ModelChatUser("Aditya Gunjal", "Good Night", "1 hr ago", "Default"));
     }
+
+    public void getChats(){
+
+    }
+
 }

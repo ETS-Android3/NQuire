@@ -184,34 +184,18 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
     View.OnClickListener onEditProfileClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            LinearLayout linearLayout = rootView.findViewById(R.id.linlay1);
-            LinearLayout linearLayout1 = rootView.findViewById(R.id.profile_info_linear_layout);
-            linearLayout.setVisibility(View.GONE);
-            linearLayout1.setVisibility(View.GONE);
-            username.setVisibility(View.GONE);
-            bio.setVisibility(View.GONE);
-            editProfile.setVisibility(View.GONE);
-            editProfileText.setVisibility(View.GONE);
-
-            addPhoto.setVisibility(View.VISIBLE);
-
-            LinearLayout linearLayout2 = rootView.findViewById(R.id.edit_profile_linear_layout);
-            linearLayout2.setVisibility(View.VISIBLE);
 
             TextInputEditText firstName = rootView.findViewById(R.id.edit_first_name);
             TextInputEditText lastName = rootView.findViewById(R.id.edit_last_name);
             TextInputEditText bio = rootView.findViewById(R.id.edit_bio);
             TextInputEditText editUsername = rootView.findViewById(R.id.edit_username);
-            TextInputLayout editUsernameLayout = rootView.findViewById(R.id.edit_username_layout);
-
-            editUsernameLayout.setVisibility(View.VISIBLE);
 
             firstName.setText(modelUser.getFirstName());
             lastName.setText(modelUser.getLastName());
             if (!modelUser.getBio().equals("-")) bio.setText(modelUser.getBio());
             editUsername.setText(modelUser.getUsername());
 
-            isEditModeOn = true;
+            toggleView();
         }
     };
 
@@ -252,19 +236,7 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
     @Override
     public boolean onBackPressed() {
         if (isEditModeOn) {
-            LinearLayout linearLayout = rootView.findViewById(R.id.linlay1);
-            LinearLayout linearLayout1 = rootView.findViewById(R.id.profile_info_linear_layout);
-            linearLayout.setVisibility(View.VISIBLE);
-            linearLayout1.setVisibility(View.VISIBLE);
-            username.setVisibility(View.VISIBLE);
-            bio.setVisibility(View.VISIBLE);
-            editProfile.setVisibility(View.VISIBLE);
-            editProfileText.setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.edit_username_layout).setVisibility(View.GONE);
-            LinearLayout linearLayout2 = rootView.findViewById(R.id.edit_profile_linear_layout);
-            linearLayout2.setVisibility(View.GONE);
-            addPhoto.setVisibility(View.GONE);
-            isEditModeOn = false;
+            toggleView();
             return true;
         } else {
             return false;
@@ -283,7 +255,15 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
     };
 
     public void uploadImage(){
-        Bitmap bitmap = ((BitmapDrawable)circleImageView.getDrawable()).getBitmap();
+        Bitmap bitmap = null;
+        try{
+             bitmap = ((BitmapDrawable)circleImageView.getDrawable()).getBitmap();
+        }catch (Exception e){
+            toggleView();
+            saveButton.setClickable(true);
+            return;
+        }
+
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
 
@@ -304,24 +284,8 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 Toast.makeText(getActivity(), "Image uploaded Successfully", Toast.LENGTH_SHORT).show();
-                                addPhoto.setVisibility(View.GONE);
-
-                                TextInputLayout editUsernameLayout = rootView.findViewById(R.id.edit_username_layout);
-                                editUsernameLayout.setVisibility(View.GONE);
-
-                                LinearLayout linearLayout2 = rootView.findViewById(R.id.edit_profile_linear_layout);
-                                linearLayout2.setVisibility(View.GONE);
-
-                                LinearLayout linearLayout = rootView.findViewById(R.id.linlay1);
-                                LinearLayout linearLayout1 = rootView.findViewById(R.id.profile_info_linear_layout);
-                                linearLayout.setVisibility(View.VISIBLE);
-                                linearLayout1.setVisibility(View.VISIBLE);
-                                username.setVisibility(View.VISIBLE);
-                                bio.setVisibility(View.VISIBLE);
-                                editProfile.setVisibility(View.VISIBLE);
-                                editProfileText.setVisibility(View.VISIBLE);
-
                                 saveButton.setClickable(true);
+                                toggleView();
                             }
                         });
             }
@@ -349,5 +313,48 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
 
         }
     };
+
+    public void toggleView(){
+        if(isEditModeOn == true){
+            addPhoto.setVisibility(View.GONE);
+
+            TextInputLayout editUsernameLayout = rootView.findViewById(R.id.edit_username_layout);
+            editUsernameLayout.setVisibility(View.GONE);
+
+            LinearLayout linearLayout2 = rootView.findViewById(R.id.edit_profile_linear_layout);
+            linearLayout2.setVisibility(View.GONE);
+
+            LinearLayout linearLayout = rootView.findViewById(R.id.linlay1);
+            LinearLayout linearLayout1 = rootView.findViewById(R.id.profile_info_linear_layout);
+            linearLayout.setVisibility(View.VISIBLE);
+            linearLayout1.setVisibility(View.VISIBLE);
+            username.setVisibility(View.VISIBLE);
+            bio.setVisibility(View.VISIBLE);
+            editProfile.setVisibility(View.VISIBLE);
+            editProfileText.setVisibility(View.VISIBLE);
+
+            isEditModeOn = false;
+        }else{
+            LinearLayout linearLayout = rootView.findViewById(R.id.linlay1);
+            LinearLayout linearLayout1 = rootView.findViewById(R.id.profile_info_linear_layout);
+            linearLayout.setVisibility(View.GONE);
+            linearLayout1.setVisibility(View.GONE);
+            username.setVisibility(View.GONE);
+            bio.setVisibility(View.GONE);
+            editProfile.setVisibility(View.GONE);
+            editProfileText.setVisibility(View.GONE);
+
+            addPhoto.setVisibility(View.VISIBLE);
+
+            TextInputLayout editUsernameLayout = rootView.findViewById(R.id.edit_username_layout);
+            editUsernameLayout.setVisibility(View.VISIBLE);
+
+            LinearLayout linearLayout2 = rootView.findViewById(R.id.edit_profile_linear_layout);
+            linearLayout2.setVisibility(View.VISIBLE);
+
+            isEditModeOn = true;
+        }
+    }
+
 
 }

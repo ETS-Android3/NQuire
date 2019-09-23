@@ -119,9 +119,9 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             ModelUser user = new ModelUser(fname, lname, uname, eMail, rid);
-
+                            final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             FirebaseDatabase.getInstance().getReference("Users")
-                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .child(userID)
                                     .setValue(user)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
@@ -129,7 +129,7 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
                                             if(task.isSuccessful()){
                                                 FirebaseDatabase.getInstance().getReference("Usernames")
                                                         .child(uname)
-                                                        .setValue(new ModelUsernameEmail(eMail))
+                                                        .setValue(new ModelUsernameEmail(eMail, userID))
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
