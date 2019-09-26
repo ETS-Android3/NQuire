@@ -9,11 +9,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ChatActivity"></activity>
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".AnswerQuestionActivity" />
+        <activity android:name=".SplashActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
+        <activity android:name=".ChatActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name=".SettingsActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name=".AnswerQuestionActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity
             android:name=".SearchableActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -23,10 +29,14 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".ShowAnswerActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".ProfileActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name=".MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name=".ShowAnswerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name=".LoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,9 +44,9 @@
             </intent-filter>
         </activity>
     </application>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

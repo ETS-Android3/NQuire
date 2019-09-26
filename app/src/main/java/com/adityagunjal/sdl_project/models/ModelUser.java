@@ -1,8 +1,12 @@
 package com.adityagunjal.sdl_project.models;
 
+import java.util.ArrayList;
+
 public class ModelUser {
     public String firstName, lastName, username, email, registrationID, imagePath, bio;
     int questionCount, answerCount;
+    public ArrayList<String> questionsArrayList;
+    public ArrayList<String> answersArrayList;
 
     public ModelUser(){}
 
@@ -76,6 +80,22 @@ public class ModelUser {
 
     public void setRegistrationID(String registrationID) {
         this.registrationID = registrationID;
+    }
+
+    public ArrayList<String> getQuestionsArrayList() {
+        return questionsArrayList;
+    }
+
+    public void setQuestionsArrayList(ArrayList<String> questionsArrayList) {
+        this.questionsArrayList = questionsArrayList;
+    }
+
+    public ArrayList<String> getAnswersArrayList() {
+        return answersArrayList;
+    }
+
+    public void setAnswersArrayList(ArrayList<String> answersArrayList) {
+        this.answersArrayList = answersArrayList;
     }
 
     public ModelUser(String firstName, String lastName, String username, String email, String registrationID){

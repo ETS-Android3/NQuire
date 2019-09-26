@@ -16,7 +16,7 @@
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_margin="10dp"
+                android:layout_margin="5dp"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:src="@drawable/ic_profile_pic"

@@ -3,6 +3,7 @@ package com.adityagunjal.sdl_project;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -11,4 +12,9 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
     }
+
+    public void onBackPressed(View view){
+        super.onBackPressed();
+    }
+
 }

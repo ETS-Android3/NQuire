@@ -9,14 +9,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adityagunjal.sdl_project.interfaces.DataChanged;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.adityagunjal.sdl_project.ui.chat.ChatFragment;
 import com.adityagunjal.sdl_project.ui.draft.DraftFragment;
@@ -41,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     Fragment currentFragment;
 
     FirebaseAuth firebaseAuth;
-    FirebaseUser firebaseUser;
 
     DrawerLayout drawer;
     NavigationView navigationView;
@@ -201,44 +203,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setUser(){
-        firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
 
-        String userID = firebaseUser.getUid();
+        SplashActivity.userInfo.setDataChangedListener(new DataChanged() {
+            @Override
+            public void onDataChanged(ModelUser modelUser, String userID, Bitmap profilePic) {
 
-        final CircleImageView circleImageView = findViewById(R.id.drawer_icon);
+                CircleImageView circleImageView = findViewById(R.id.drawer_icon);
 
-        FirebaseDatabase.getInstance().getReference("Users")
-                .child(userID)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        ModelUser user = dataSnapshot.getValue(ModelUser.class);
-                        View navHeaderView = navigationView.getHeaderView(0);
-                        TextView navHeaderUsernameTextView = navHeaderView.findViewById(R.id.nav_header_username);
-                        navHeaderUsernameTextView.setText(user.getUsername());
+                View navHeaderView = navigationView.getHeaderView(0);
+                TextView navHeaderUsernameTextView = navHeaderView.findViewById(R.id.nav_header_username);
+                if(modelUser != null)
+                    navHeaderUsernameTextView.setText(modelUser.getUsername());
 
-                        if(user.getImagePath().equals("default")){
-                            CircleImageView navHeaderProfile = findViewById(R.id.imageView);
-                            navHeaderProfile.setImageResource(R.drawable.ic_profile_icon);
-                        }else{
-                            FirebaseStorage.getInstance().getReference(user.getImagePath())
-                                    .getBytes(1024 * 1024)
-                                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                        @Override
-                                        public void onSuccess(byte[] bytes) {
-                                            circleImageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                                            CircleImageView navHeaderProfile = findViewById(R.id.imageView);
-                                            navHeaderProfile.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                                        }
-                                    });
-                        }
-                    }
+                CircleImageView navHeaderProfile = navHeaderView.findViewById(R.id.imageView);
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                if(profilePic == null){
+                    navHeaderProfile.setImageResource(R.drawable.ic_profile_icon);
+                }else{
+                    circleImageView.setImageBitmap(profilePic);
+                    navHeaderProfile.setImageBitmap(profilePic);
+                }
+            }
+        });
 
-                    }
-                });
     }
 
     public void setTitle(String title){

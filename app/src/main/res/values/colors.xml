@@ -25,5 +25,6 @@
     <color name="followingBg">#49BEFF</color>
 
     <color name="login_background">#FFFFFF</color>
+    <color name="splash_background">#1B0242</color>
 
 </resources>

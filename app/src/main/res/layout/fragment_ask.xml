@@ -99,7 +99,7 @@
 
                     <EditText
                         android:layout_marginLeft="10dp"
-                        android:id="@+id/textView3"
+                        android:id="@+id/edit_ask"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@null"
@@ -136,7 +136,7 @@
             android:elevation="7dp">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/button_post"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:backgroundTint="#3F51B5"

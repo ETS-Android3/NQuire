@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:minHeight="?android:attr/actionBarSize"
         android:background="@color/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
 
         <LinearLayout
@@ -22,16 +22,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:layout_gravity="center_vertical"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_back"
-                android:background="@null"/>
-
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_marginLeft="14dp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_account_icon"
@@ -59,8 +50,7 @@
         app:layout_constraintTop_toBottomOf="@id/chat_toolbar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/send_message_layout"
-        />
+        app:layout_constraintBottom_toTopOf="@id/send_message_layout" />
 
     <LinearLayout
         android:layout_marginBottom="10dp"
@@ -102,8 +92,7 @@
             android:background="@null"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="10dp"
-            android:onClick="onSendMessageClicked"
-            />
+            android:onClick="onSendMessageClicked" />
 
     </LinearLayout>
 

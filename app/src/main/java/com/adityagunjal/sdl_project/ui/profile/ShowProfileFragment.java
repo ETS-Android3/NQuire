@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +29,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.adityagunjal.sdl_project.R;
-import com.adityagunjal.sdl_project.helpers.FirebaseImageLoader;
+import com.adityagunjal.sdl_project.SplashActivity;
 import com.adityagunjal.sdl_project.interfaces.CustomeOnBackPressed;
+import com.adityagunjal.sdl_project.interfaces.DataChanged;
 import com.adityagunjal.sdl_project.models.ModelUser;
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -59,18 +60,18 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
 
     public static final int GET_FROM_GALLERY = 3;
 
-    FirebaseUser firebaseUser;
     FirebaseStorage firebaseStorage;
     StorageReference storageReference;
 
     ModelUser modelUser;
+    Bitmap profilePic;
+    String userID;
+
     CircleImageView circleImageView;
     ImageView editProfile;
     TextView username, bio, answerCount, questionCount, name, emailID, registrationID, editProfileText;
     Button saveButton;
     ImageButton addPhoto;
-
-    String userID;
 
     View rootView;
 
@@ -104,10 +105,10 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
         addPhoto = rootView.findViewById(R.id.add_photo_button);
         addPhoto.setOnClickListener(onAddImageClicked);
 
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        userID = firebaseUser.getUid();
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
+
+
 
         getUserInfo();
 
@@ -140,36 +141,25 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
 
     public void getUserInfo() {
 
-        FirebaseDatabase.getInstance().getReference("Users")
-                .child(userID)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        modelUser = dataSnapshot.getValue(ModelUser.class);
-                        setUserInfo();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+        SplashActivity.userInfo.setDataChangedListener(new DataChanged() {
+            @Override
+            public void onDataChanged(ModelUser modelUser, String userID, Bitmap profilePic) {
+                setUserInfo(modelUser, userID, profilePic);
+            }
+        });
 
     }
 
-    public void setUserInfo(){
-        if (modelUser.getImagePath().equals("default")) {
+    public void setUserInfo(ModelUser modelUser, String userID, Bitmap profilePic){
+
+        this.modelUser = modelUser;
+        this.userID = userID;
+        this.profilePic = profilePic;
+
+        if (profilePic == null) {
             circleImageView.setImageResource(R.drawable.ic_profile_icon);
         } else {
-            firebaseStorage.getReference(modelUser.getImagePath())
-                    .getBytes(1024 * 1024)
-                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            circleImageView.setImageBitmap(bitmap);
-                        }
-                    });
+            circleImageView.setImageBitmap(profilePic);
         }
         username.setText(modelUser.getUsername());
         emailID.setText(modelUser.getEmail());
@@ -214,7 +204,7 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
             FirebaseDatabase.getInstance().getReference("Users").child(userID).child("lastName").setValue(lastName.getText().toString());
             FirebaseDatabase.getInstance().getReference("Users").child(userID).child("bio").setValue(bio.getText().toString());
 
-            if(!modelUser.getImagePath().equals("default")){
+            if(profilePic != null){
                 storageReference.child(modelUser.getImagePath()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

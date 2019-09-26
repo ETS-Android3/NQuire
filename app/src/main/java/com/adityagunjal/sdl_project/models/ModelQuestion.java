@@ -1,58 +1,69 @@
 package com.adityagunjal.sdl_project.models;
 
+import java.util.Date;
+
 public class ModelQuestion {
-    public int id, userid, answers;
-    public String question, username, dateOfAnswer;
+    public String text, date, userID, username;
+    public int answers;
+    public Object timestamp;
+    public String qID;
 
     public ModelQuestion(){}
 
-    public ModelQuestion(int id, int userid, int answers, String question, String username, String dateOfAnswer) {
-        this.id = id;
-        this.userid = userid;
+    public ModelQuestion(String text, String date, String userID, int answers) {
+        this.text = text;
+        this.date = date;
+        this.userID = userID;
         this.answers = answers;
-        this.question = question;
-        this.username = username;
-        this.dateOfAnswer = dateOfAnswer;
+        this.timestamp = -1 * new Date().getTime();;
     }
 
-    public int getId() {
-        return id;
+    public Object getTimestamp() {
+        return timestamp;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setTimestamp(Object timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public int getUserid() {
-        return userid;
+    public String getText() {
+        return text;
     }
 
-    public void setUserid(int userid) {
-        this.userid = userid;
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public int getAnswers() {
         return answers;
     }
 
-    public String getDateOfAnswer() {
-        return dateOfAnswer;
-    }
-
-    public void setDateOfAnswer(String dateOfAnswer) {
-        this.dateOfAnswer = dateOfAnswer;
-    }
-
     public void setAnswers(int answers) {
         this.answers = answers;
     }
 
-    public String getQuestion() {
-        return question;
+    public String getqID() {
+        return qID;
     }
 
-    public void setQuestion(String question) {
-        this.question = question;
+    public void setqID(String qID) {
+        this.qID = qID;
     }
 
     public String getUsername() {
