@@ -214,7 +214,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
         ModelAnswer modelAnswer = new ModelAnswer(SplashActivity.userInfo.getUserID(), questionID, answer, date);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Answers").child(questionID);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Answers");
         final String answerID = ref.push().getKey();
 
         final ProgressDialog progressDialog = new ProgressDialog(this);

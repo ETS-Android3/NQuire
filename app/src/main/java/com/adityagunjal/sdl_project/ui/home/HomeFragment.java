@@ -1,6 +1,7 @@
 package com.adityagunjal.sdl_project.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +24,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class HomeFragment extends Fragment {
 
@@ -33,20 +36,30 @@ public class HomeFragment extends Fragment {
     ArrayList<ModelFeed> modelFeedArrayList = new ArrayList<>();
     AdapterFeed adapterFeed;
 
+    HashSet<String> currentFeedQuestions = new HashSet<>();
+
+    LinearLayoutManager layoutManager;
+
+    int pageLimit = 8;
+    long offset = 0;
+
+    private boolean loading = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
 
         adapterFeed = new AdapterFeed(getActivity(), modelFeedArrayList);
         recyclerView.setAdapter(adapterFeed);
 
-        TextView textView = new TextView(getActivity());
-
-
+        recyclerView.setOnScrollListener(onScrollListener);
 
         populateRecyclerView();
 
@@ -54,58 +67,157 @@ public class HomeFragment extends Fragment {
     }
 
     public void populateRecyclerView() {
-        /*FirebaseDatabase.getInstance().getReference("Answers")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot ds : dataSnapshot.getChildren()){
-                            ds.getRef().orderByChild("timestamp").limitToFirst(1)
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            final ModelAnswer modelAnswer = dataSnapshot.getValue(ModelAnswer.class);
-                                            FirebaseDatabase.getInstance().getReference("Users")
-                                                    .child(modelAnswer.getUserID())
-                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                            final ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
-                                                            FirebaseDatabase.getInstance().getReference("questions")
-                                                                    .child(modelAnswer.getUserID())
-                                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                        @Override
-                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                                            ModelQuestion modelQuestion = dataSnapshot.getValue(ModelQuestion.class);
-                                                                            ModelFeed modelFeed = new ModelFeed(modelQuestion, modelUser, modelAnswer);
-                                                                            adapterFeed.addNewItem(modelFeed);
-                                                                        }
 
-                                                                        @Override
-                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+        Query query = FirebaseDatabase.getInstance().getReference("Answers").orderByChild("timestamp").limitToFirst(pageLimit);
 
-                                                                        }
-                                                                    });
-                                                        }
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    String answerID = ds.getKey();
+                    final ModelAnswer modelAnswer = ds.getValue(ModelAnswer.class);
+                    modelAnswer.setAnswerID(answerID);
 
-                                                        @Override
-                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                    if(!currentFeedQuestions.contains(modelAnswer.getQuestionID())){
 
-                                                        }
-                                                    });
-                                        }
+                        currentFeedQuestions.add(modelAnswer.getQuestionID());
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        FirebaseDatabase.getInstance().getReference("Users")
+                                .child(modelAnswer.getUserID())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        final ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
+                                        FirebaseDatabase.getInstance().getReference("questions")
+                                                .child(modelAnswer.getQuestionID())
+                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                        ModelQuestion modelQuestion = dataSnapshot.getValue(ModelQuestion.class);
 
-                                        }
-                                    });
-                        }
+                                                        ModelFeed modelFeed = new ModelFeed(modelQuestion, modelUser, modelAnswer);
+
+                                                        adapterFeed.addNewItem(modelFeed);
+                                                        offset = (long) modelAnswer.getTimestamp();
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
                     }
+                }
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });*/
+            }
+        });
+
     }
+
+    public void loadMoreFeed(){
+        Query query = FirebaseDatabase.getInstance().getReference("Answers")
+                .orderByChild("timestamp")
+                .limitToFirst(pageLimit)
+                .startAt(offset);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int i = 0;
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+
+                    if(i == 0){
+                        i++;
+                        continue;
+                    }
+
+                    String answerID = ds.getKey();
+                    final ModelAnswer modelAnswer = ds.getValue(ModelAnswer.class);
+                    modelAnswer.setAnswerID(answerID);
+
+                    if(!currentFeedQuestions.contains(modelAnswer.getQuestionID())){
+
+                        currentFeedQuestions.add(modelAnswer.getQuestionID());
+
+                        FirebaseDatabase.getInstance().getReference("Users")
+                                .child(modelAnswer.getUserID())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        final ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
+                                        FirebaseDatabase.getInstance().getReference("questions")
+                                                .child(modelAnswer.getQuestionID())
+                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                        ModelQuestion modelQuestion = dataSnapshot.getValue(ModelQuestion.class);
+
+                                                        ModelFeed modelFeed = new ModelFeed(modelQuestion, modelUser, modelAnswer);
+
+                                                        adapterFeed.addNewItem(modelFeed);
+                                                        offset = (long) modelAnswer.getTimestamp();
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                    }
+
+                }
+                loading = true;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            if(dy > 0)
+            {
+                visibleItemCount = layoutManager.getChildCount();
+                totalItemCount = layoutManager.getItemCount();
+                pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+
+                if (loading)
+                {
+                    if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
+                    {
+                        loading = false;
+                        loadMoreFeed();
+                    }
+                }
+            }
+
+        }
+    };
 }

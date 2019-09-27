@@ -8,11 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adityagunjal.sdl_project.MainActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.ShowAnswerActivity;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
@@ -24,6 +26,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> {
 
@@ -54,12 +61,54 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
         ModelQuestion modelQuestion = modelFeed.getQuestion();
         ModelAnswer modelAnswer = modelFeed.getAnswer();
 
-        holder.name.setText(modelUser.username);
+        float factor = holder.answer.getContext().getResources().getDisplayMetrics().density;
+
+        holder.name.setText(modelUser.getUsername());
         holder.question.setText(modelQuestion.getText());
         holder.lastUpdated.setText(modelAnswer.getDate());
-        holder.likes.setText(modelAnswer.getUpvotes());
-        holder.dislikes.setText(modelAnswer.getDownvotes());
-        holder.comments.setText(modelAnswer.getComments());
+        holder.likes.setText(Integer.toString(modelAnswer.getUpvotes()));
+        holder.dislikes.setText(Integer.toString(modelAnswer.getDownvotes()));
+        holder.comments.setText(Integer.toString(modelAnswer.getComments()));
+
+        HashMap<String, String> answerMap = modelAnswer.getAnswer();
+        Iterator answerIterator = answerMap.entrySet().iterator();
+
+        String answerText = "";
+        int flag0 = 0, flag1 = 0;
+        while(answerIterator.hasNext()){
+            Map.Entry<String, String> answerElement = (Map.Entry) answerIterator.next();
+            String key = answerElement.getKey();
+            if(key.charAt(0) == 't'){
+                String text = answerElement.getValue();
+                for(int i = 0; i < text.length() && answerText.length() < 100; i++){
+                    answerText += text.charAt(i);
+                }
+            }else {
+                if(flag1 == 0){
+                    FirebaseStorage.getInstance().getReference(answerElement.getValue())
+                            .getBytes(1024 * 1024)
+                            .addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                                @Override
+                                public void onComplete(@NonNull Task<byte[]> task) {
+                                    holder.answerImage.setImageBitmap(BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length));
+                                    holder.answerImage.setVisibility(View.VISIBLE);
+                                }
+                            });
+                    flag1 = 1;
+                }
+            }
+            if(flag0 == 1 && flag1 == 1){
+                break;
+            }
+        }
+
+        if(flag1 == 1){
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.topMargin = (int)(factor * 10);
+            holder.answer.setLayoutParams(layoutParams);
+        }
+
+        holder.answer.setText(answerText + " ...");
 
         FirebaseStorage.getInstance().getReference(modelUser.getImagePath())
                 .getBytes(1024 * 1024)
@@ -94,7 +143,8 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
         final Context itemViewContext;
 
         TextView name, answer, question, lastUpdated, likes, dislikes, comments;
-        ImageView profilePic;
+        CircleImageView profilePic;
+        ImageView answerImage;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -102,6 +152,7 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
             itemViewContext = itemView.getContext();
 
             profilePic = itemView.findViewById(R.id.card_profile_pic);
+            answerImage = itemView.findViewById(R.id.card_answer_image);
 
             name = itemView.findViewById(R.id.card_user_name);
             answer = itemView.findViewById(R.id.card_answer_text);

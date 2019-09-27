@@ -2,10 +2,9 @@ package com.adityagunjal.sdl_project.models;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.UUID;
 
 public class ModelAnswer {
-    public String userID, questionID, date;
+    public String userID, questionID, date, answerID;
     public Object timestamp;
     public HashMap<String, String> answer;
     public int upvotes, downvotes, comments, views;
@@ -94,5 +93,13 @@ public class ModelAnswer {
 
     public void setQuestionID(String questionID) {
         this.questionID = questionID;
+    }
+
+    public String getAnswerID() {
+        return answerID;
+    }
+
+    public void setAnswerID(String answerID) {
+        this.answerID = answerID;
     }
 }

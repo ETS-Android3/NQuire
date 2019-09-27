@@ -40,7 +40,7 @@ public class RecentFragment extends Fragment {
     int pastVisiblesItems, visibleItemCount, totalItemCount;
 
     long offset = 0;
-    final int pageLimit = 10;
+    final int pageLimit = 20;
 
     @Nullable
     @Override
@@ -66,47 +66,42 @@ public class RecentFragment extends Fragment {
 
     public void populateRecyclerView(){
 
-        loadQuestions();
-    }
-
-    public void loadQuestions(){
-
         Query getQuestions = FirebaseDatabase.getInstance().getReference("questions")
                 .orderByChild("timestamp")
                 .limitToFirst(pageLimit);
 
         getQuestions.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot ds : dataSnapshot.getChildren()){
-                            String qID = ds.getKey();
-                            final ModelQuestion modelQuestion = ds.getValue(ModelQuestion.class);
-                            modelQuestion.setqID(qID);
-                            FirebaseDatabase.getInstance().getReference("Users")
-                                    .child(modelQuestion.getUserID())
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            String userName = dataSnapshot.child("username").getValue(String.class);
-                                            modelQuestion.setUsername(userName);
-                                            adapterQuestion.addNewItem(modelQuestion);
-                                            offset = (long) modelQuestion.getTimestamp();
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    String qID = ds.getKey();
+                    final ModelQuestion modelQuestion = ds.getValue(ModelQuestion.class);
+                    modelQuestion.setqID(qID);
+                    FirebaseDatabase.getInstance().getReference("Users")
+                            .child(modelQuestion.getUserID())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    String userName = dataSnapshot.child("username").getValue(String.class);
+                                    modelQuestion.setUsername(userName);
+                                    adapterQuestion.addNewItem(modelQuestion);
+                                    offset = (long) modelQuestion.getTimestamp();
 
-                                        }
+                                }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                        }
-                                    });
-                        }
-                    }
+                                }
+                            });
+                }
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+            }
+        });
     }
 
     public void loadMoreQuestions(){
@@ -120,10 +115,12 @@ public class RecentFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int i = 0;
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
+
                     if(i == 0){
                         i++;
                         continue;
                     }
+
                     String qID = ds.getKey();
                     final ModelQuestion modelQuestion = ds.getValue(ModelQuestion.class);
                     modelQuestion.setqID(qID);
