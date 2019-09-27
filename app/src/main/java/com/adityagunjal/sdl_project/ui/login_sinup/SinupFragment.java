@@ -2,6 +2,7 @@ package com.adityagunjal.sdl_project.ui.login_sinup;
 
 import android.os.Bundle;
 import android.os.PatternMatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +58,6 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.signup_button){
-            Toast.makeText(getActivity(), "Sign Up Clicked", Toast.LENGTH_LONG).show();
             registerUser();
         }
     }
@@ -143,7 +143,8 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
                                     });
 
                         }else{
-
+                            Log.i("Registration", task.getException().toString());
+                            Toast.makeText(getActivity(), "Registration Failed", Toast.LENGTH_LONG).show();
                         }
                     }
                 });

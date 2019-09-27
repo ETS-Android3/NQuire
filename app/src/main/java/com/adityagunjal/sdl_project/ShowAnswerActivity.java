@@ -59,7 +59,6 @@ public class ShowAnswerActivity extends AppCompatActivity {
     }
 
     public void onBackPressed(View view){
-        //startActivity(new Intent(this, MainActivity.class));
         this.finish();
     }
 }

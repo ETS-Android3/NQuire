@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.adityagunjal.sdl_project.MainActivity;
 import com.adityagunjal.sdl_project.R;
+import com.adityagunjal.sdl_project.SplashActivity;
 import com.adityagunjal.sdl_project.models.ModelUsernameEmail;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -87,7 +88,7 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
                                             @Override
                                             public void onComplete(@NonNull Task<AuthResult> task) {
                                                 if(task.isSuccessful()){
-                                                    Intent i = new Intent(getActivity(), MainActivity.class);
+                                                    Intent i = new Intent(getActivity(), SplashActivity.class);
                                                     startActivity(i);
                                                     getActivity().finish();
                                                 }else{

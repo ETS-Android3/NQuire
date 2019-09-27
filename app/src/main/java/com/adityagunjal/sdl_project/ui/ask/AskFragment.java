@@ -84,6 +84,7 @@ public class AskFragment extends Fragment {
                                                     questionsArrayList = new ArrayList<>();
                                                     questionsArrayList.add(questionID);
                                                 }
+                                                modelUser.setQuestionCount(modelUser.getQuestionCount() + 1);
                                                 modelUser.setQuestionsArrayList(questionsArrayList);
                                                 FirebaseDatabase.getInstance().getReference("Users")
                                                         .child(userID)
@@ -95,6 +96,7 @@ public class AskFragment extends Fragment {
                                                                     editAsk.setText("");
                                                                     editAsk.clearFocus();
                                                                     Toast.makeText(getActivity(), "Question Posted Successfully", Toast.LENGTH_SHORT).show();
+
                                                                 }else{
                                                                     Toast.makeText(getActivity(), "Failed to post question", Toast.LENGTH_SHORT).show();
                                                                 }

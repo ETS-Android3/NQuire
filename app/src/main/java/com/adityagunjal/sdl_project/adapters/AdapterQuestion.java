@@ -46,10 +46,15 @@ public class AdapterQuestion extends RecyclerView.Adapter<AdapterQuestion.MyView
                 String userID = modelQuestionArrayList.get(position).getUserID();
                 String qID = modelQuestionArrayList.get(position).getqID();
                 String questionText = modelQuestionArrayList.get(position).getText();
+                String username = modelQuestionArrayList.get(position).getUsername();
+                String answers = Integer.toString(modelQuestionArrayList.get(position).getAnswers());
+
                 Intent i = new Intent(context, AnswerQuestionActivity.class);
                 i.putExtra("EXTRA_QUESTION_ID", qID);
                 i.putExtra("EXTRA_QUESTION_TEXT", questionText);
                 i.putExtra("EXTRA_USER_ID", userID);
+                i.putExtra("EXTRA_USERNAME", username);
+                i.putExtra("EXTRA_ANSWERS_COUNT",answers);
 
                 context.startActivity(i);
             }

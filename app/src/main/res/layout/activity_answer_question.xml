@@ -95,17 +95,25 @@
                     android:layout_marginTop="10dp"
                     android:backgroundTint="@color/white">
 
-                    <EditText
-                        android:id="@+id/textView3"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@null"
-                        android:hint="Enter Your Answer..."
-                        android:paddingTop="10dp"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
-                        android:paddingBottom="10dp"
-                        android:textColor="#1D1717"/>
+                        android:layout_height="wrap_content"
+                        android:id="@+id/answer_linear_layout"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/edit_text1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="Enter Your Answer..."
+                            android:paddingTop="10dp"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:paddingBottom="10dp"
+                            android:textColor="#1D1717"/>
+
+                    </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
 
@@ -152,7 +160,8 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:background="@null"
-                    app:srcCompat="@drawable/g1" />
+                    app:srcCompat="@drawable/g1"
+                    android:onClick="onAddImageClicked"/>
 
                 <ImageButton
                     android:layout_marginLeft="15dp"
@@ -163,6 +172,16 @@
                     android:layout_toRightOf="@id/imageButton10"
                     android:background="@null"
                     app:srcCompat="@drawable/keyboardf2" />
+
+                <Button
+                    android:layout_marginRight="10dp"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/button_post"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:backgroundTint="#3F51B5"
+                    android:text="Post"
+                    android:onClick="onPostButtonClicked"/>
 
             </RelativeLayout>
 

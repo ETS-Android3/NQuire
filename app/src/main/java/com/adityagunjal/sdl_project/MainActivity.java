@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import android.app.Application;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -133,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case R.id.drawable_nav_logout:
                             firebaseAuth.signOut();
-                            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                            SplashActivity.isAlreadyStarted = false;
+                            SplashActivity.databaseReference.removeEventListener(SplashActivity.valueEventListener);
                             finish();
                             break;
                     }

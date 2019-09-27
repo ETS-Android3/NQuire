@@ -1,63 +1,35 @@
 package com.adityagunjal.sdl_project.models;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.UUID;
+
 public class ModelAnswer {
-    public int profile_pic;
-    public String username;
-    public String lastUpdated;
-    public String Answer;
-    public int id, upvotes, downvotes, comments;
+    public String userID, questionID, date;
+    public Object timestamp;
+    public HashMap<String, String> answer;
+    public int upvotes, downvotes, comments, views;
 
     public ModelAnswer(){}
 
-    public ModelAnswer(int id, int profile_pic, String username, String lastUpdated, String answer, int upvotes, int downvotes, int comments) {
-        this.profile_pic = profile_pic;
-        this.username = username;
-        this.lastUpdated = lastUpdated;
-        this.Answer = answer;
-        this.id = id;
-        this.upvotes = upvotes;
-        this.downvotes = downvotes;
-        this.comments = comments;
+    public ModelAnswer(String username, String questionID, HashMap<String, String> answer,String date) {
+        this.userID = username;
+        this.questionID = questionID;
+        this.timestamp = -1 * new Date().getTime();
+        this.date = date;
+        this.answer = answer;
+        this.upvotes = 0;
+        this.downvotes = 0;
+        this.comments = 0;
+        this.views = 0;
     }
 
-    public int getProfile_pic() {
-        return profile_pic;
+    public String getUserID() {
+        return userID;
     }
 
-    public void setProfile_pic(int profile_pic) {
-        this.profile_pic = profile_pic;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(String lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    public String getAnswer() {
-        return Answer;
-    }
-
-    public void setAnswer(String answer) {
-        Answer = answer;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public int getUpvotes() {
@@ -82,5 +54,45 @@ public class ModelAnswer {
 
     public void setComments(int comments) {
         this.comments = comments;
+    }
+
+    public HashMap<String, String> getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(HashMap<String, String> answer) {
+        this.answer = answer;
+    }
+
+    public Object getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Object timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getQuestionID() {
+        return questionID;
+    }
+
+    public void setQuestionID(String questionID) {
+        this.questionID = questionID;
     }
 }

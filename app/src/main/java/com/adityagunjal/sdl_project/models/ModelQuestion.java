@@ -15,7 +15,7 @@ public class ModelQuestion {
         this.date = date;
         this.userID = userID;
         this.answers = answers;
-        this.timestamp = -1 * new Date().getTime();;
+        this.timestamp = -1 * new Date().getTime();
     }
 
     public Object getTimestamp() {

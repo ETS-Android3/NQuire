@@ -40,11 +40,10 @@ public class AllAnswersFragment extends Fragment {
     }
 
     public void populateRecyclerView(){
-        modelAnswerArrayList.add(new ModelAnswer(1, R.drawable.ic_profile_pic, "Aditya Gunjal", "1 hr ago", "This is test answer", 12, 1, 3));
-        modelAnswerArrayList.add(new ModelAnswer(2, R.drawable.ic_profile_pic, "Prathamesh Jadhav", "12 hr ago", "This is test answer 2", 9, 3, 4));
-        modelAnswerArrayList.add(new ModelAnswer(3, R.drawable.ic_profile_pic, "Aditya Gunjal", "1 hr ago", "This is test answer", 12, 1, 3));
-        modelAnswerArrayList.add(new ModelAnswer(4, R.drawable.ic_profile_pic, "Aditya Gunjal", "1 hr ago", "This is test answer", 12, 1, 3));
-        modelAnswerArrayList.add(new ModelAnswer(5, R.drawable.ic_profile_pic, "Aditya Gunjal", "1 hr ago", "This is test answer", 12, 1, 3));
+        modelAnswerArrayList.add(new ModelAnswer("Username", "12345", null, "12/12/12"));
+        modelAnswerArrayList.add(new ModelAnswer("Username", "12345", null, "12/12/12"));
+        modelAnswerArrayList.add(new ModelAnswer("Username", "12345", null, "12/12/12"));
+        modelAnswerArrayList.add(new ModelAnswer("Username", "12345", null, "12/12/12"));
     }
 
 }

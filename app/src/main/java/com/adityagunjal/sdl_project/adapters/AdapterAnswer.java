@@ -43,10 +43,10 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
         holder.likes.setText(Integer.toString(modelAnswer.getUpvotes()));
         holder.dislikes.setText(Integer.toString(modelAnswer.getDownvotes()));
         holder.comments.setText(Integer.toString(modelAnswer.getComments()) + " comments");
-        holder.answer.setText(modelAnswer.getAnswer());
-        holder.lastUpdated.setText(modelAnswer.getLastUpdated());
-        holder.profilePic.setImageResource(modelAnswer.getProfile_pic());
-        holder.username.setText(modelAnswer.getUsername());
+        holder.answer.setText("Answer goes here");
+        holder.lastUpdated.setText(modelAnswer.getDate());
+        //holder.profilePic.setImageResource(modelAnswer.getProfile_pic());
+        //holder.username.setText(modelAnswer.getUsername());
     }
 
     @Override
