@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adityagunjal.sdl_project.R;
+import com.adityagunjal.sdl_project.ShowAnswerActivity;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +35,7 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
 
     Context context;
     ArrayList<ModelAnswer> modelAnswerArrayList;
+    ArrayList<ModelUser> modelUserArrayList = new ArrayList<>();
 
     ModelUser user;
 
@@ -54,7 +56,7 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         final ModelAnswer modelAnswer = modelAnswerArrayList.get(position);
 
         holder.likes.setText(Integer.toString(modelAnswer.getUpvotes()));
@@ -123,7 +125,8 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        user = dataSnapshot.getValue(ModelUser.class);
+                        ModelUser user = dataSnapshot.getValue(ModelUser.class);
+                        modelUserArrayList.add(user);
                         FirebaseStorage.getInstance().getReference(user.getImagePath())
                                 .getBytes(1024 * 1024)
                                 .addOnCompleteListener(new OnCompleteListener<byte[]>() {
@@ -145,7 +148,7 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ((ShowAnswerActivity)context).showAnswer(modelAnswer, modelUserArrayList.get(position));
             }
         });
     }

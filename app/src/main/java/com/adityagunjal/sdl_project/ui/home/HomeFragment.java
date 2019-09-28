@@ -82,6 +82,8 @@ public class HomeFragment extends Fragment {
 
                         currentFeedQuestions.add(modelAnswer.getQuestionID());
 
+                        final String questionID = modelAnswer.getQuestionID();
+
                         FirebaseDatabase.getInstance().getReference("Users")
                                 .child(modelAnswer.getUserID())
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -89,11 +91,12 @@ public class HomeFragment extends Fragment {
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         final ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
                                         FirebaseDatabase.getInstance().getReference("questions")
-                                                .child(modelAnswer.getQuestionID())
+                                                .child(questionID)
                                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                         ModelQuestion modelQuestion = dataSnapshot.getValue(ModelQuestion.class);
+                                                        modelQuestion.setqID(questionID);
 
                                                         ModelFeed modelFeed = new ModelFeed(modelQuestion, modelUser, modelAnswer);
 
@@ -220,4 +223,11 @@ public class HomeFragment extends Fragment {
 
         }
     };
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+
+    }
 }

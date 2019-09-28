@@ -106,6 +106,7 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
                                                 }else{
                                                     Log.i("Login","Invalid Password");
                                                     Toast.makeText(getActivity(), "Wrong Password", Toast.LENGTH_SHORT).show();
+                                                    progressBar.setVisibility(View.GONE);
                                                 }
                                             }
                                         });
@@ -113,12 +114,13 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
                             catch (Exception e){
                                 Log.i("Login","Invalid Username");
                                 Toast.makeText(getActivity(), "Invalid Username", Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.GONE);
                             }
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                            progressBar.setVisibility(View.GONE);
                         }
                     });
         }

@@ -8,8 +8,11 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
+import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
+import com.adityagunjal.sdl_project.models.ModelUser;
 import com.adityagunjal.sdl_project.ui.all_answers.AllAnswersFragment;
 import com.adityagunjal.sdl_project.ui.comment.CommentFragment;
 import com.adityagunjal.sdl_project.ui.one_answer.OneAnswerFragment;
@@ -59,9 +62,23 @@ public class ShowAnswerActivity extends AppCompatActivity {
         }
     }
 
+    public void showAnswer(ModelAnswer answer, ModelUser user){
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ModelUser", user);
+        bundle.putSerializable("ModelAnswer", answer);
+        bundle.putSerializable("ModelQuestion", modelQuestion);
+
+        currentFragment = new OneAnswerFragment();
+        currentFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, currentFragment).addToBackStack(null).commit();
+    }
+
+
     public void onViewMoreAnswers(View view){
 
-        Fragment allAnswersFragment = new AllAnswersFragment();
+        Fragment allAnswersFragment = new AllAnswersFragment(this);
+
+        //Toast.makeText(this, "onViewMoreAnswers Clicked !", Toast.LENGTH_SHORT).show();
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("ModelQuestion", modelQuestion);
