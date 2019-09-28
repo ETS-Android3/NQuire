@@ -21,11 +21,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:id="@+id/all_answer_profile_pic"
-                        android:scaleType="fitCenter"
                         android:src="@drawable/ic_profile_pic" />
 
                     <LinearLayout
@@ -39,7 +38,7 @@
                         <TextView
                             android:id="@+id/all_answer_user_name"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:text="Aditya Gunjal"
                             android:textColor="@color/black"
                             android:textSize="17sp" />
@@ -71,12 +70,13 @@
                         android:orientation="vertical">
 
                         <ImageView
+                            android:id="@+id/imageView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:scaleType="fitCenter"/>
 
                         <TextView
-                            android:id="@+id/answer_text"
+                            android:id="@+id/all_answer_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Answer Goes Here ..."

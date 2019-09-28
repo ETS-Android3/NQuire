@@ -1,9 +1,10 @@
 package com.adityagunjal.sdl_project.models;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
-public class ModelAnswer {
+public class ModelAnswer implements Serializable {
     public String userID, questionID, date, answerID;
     public Object timestamp;
     public HashMap<String, String> answer;

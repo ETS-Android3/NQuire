@@ -1,16 +1,22 @@
 package com.adityagunjal.sdl_project;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 
 import com.adityagunjal.sdl_project.ui.login_sinup.ForgotPasswordFragment;
 import com.adityagunjal.sdl_project.ui.login_sinup.LoginFragment;
 import com.adityagunjal.sdl_project.ui.login_sinup.SinupFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
@@ -36,8 +42,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(FirebaseAuth.getInstance().getCurrentUser() != null){
-            startActivity(new Intent(this, SplashActivity.class));
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String username = preferences.getString("username", null);
+        String email = preferences.getString("email", null);
+        String password = preferences.getString("password", null);
+
+        if(username != null && password != null){
+            startActivity(new Intent(getApplicationContext(), SplashActivity.class));
             finish();
         }
     }

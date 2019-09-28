@@ -1,8 +1,9 @@
 package com.adityagunjal.sdl_project.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ModelUser {
+public class ModelUser implements Serializable {
     public String firstName, lastName, username, email, registrationID, imagePath, bio;
     int questionCount, answerCount;
     public ArrayList<String> questionsArrayList;

@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,9 +58,9 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
     public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
         final ModelFeed modelFeed = modelFeedArrayList.get(position);
 
-        ModelUser modelUser = modelFeed.getUser();
-        ModelQuestion modelQuestion = modelFeed.getQuestion();
-        ModelAnswer modelAnswer = modelFeed.getAnswer();
+        final ModelUser modelUser = modelFeed.getUser();
+        final ModelQuestion modelQuestion = modelFeed.getQuestion();
+        final ModelAnswer modelAnswer = modelFeed.getAnswer();
 
         float factor = holder.answer.getContext().getResources().getDisplayMetrics().density;
 
@@ -128,6 +129,9 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(view.getContext(), ShowAnswerActivity.class);
+                i.putExtra("EXTRA_USER", (Serializable) modelUser);
+                i.putExtra("EXTRA_QUESTION", (Serializable) modelQuestion);
+                i.putExtra("EXTRA_ANSWER", (Serializable) modelAnswer);
                 context.startActivity(i);
             }
         });

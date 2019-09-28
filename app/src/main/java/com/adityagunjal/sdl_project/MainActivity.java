@@ -10,9 +10,11 @@ import androidx.fragment.app.Fragment;
 
 import android.app.Application;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -134,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case R.id.drawable_nav_logout:
                             firebaseAuth.signOut();
+                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                            preferences.edit().clear().commit();
+
                             SplashActivity.isAlreadyStarted = false;
                             SplashActivity.databaseReference.removeEventListener(SplashActivity.valueEventListener);
                             finish();

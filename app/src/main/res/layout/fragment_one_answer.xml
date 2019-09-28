@@ -27,7 +27,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:text="Question ..."
-                android:textSize="25dp"
+                android:textSize="20dp"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:layout_marginLeft="15dp"
@@ -42,36 +42,37 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="15dp"
-                app:layout_constraintBottom_toTopOf="@id/one_answer"
+                app:layout_constraintBottom_toTopOf="@id/one_answer_linear_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/one_answer_question"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                android:clickable="true">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="45dp"
                     android:layout_height="45dp"
-                    android:id="@+id/card_profile_pic"
-                    android:scaleType="fitCenter"
+                    android:id="@+id/one_answer_profile_pic"
                     android:src="@drawable/ic_profile_pic" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/card_profile_pic"
+                    android:layout_toRightOf="@+id/one_answer_profile_pic"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/card_user_name"
+                        android:id="@+id/one_answer_user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Aditya Gunjal"
                         android:textColor="@color/black"
-                        android:textSize="17sp" />
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
 
                     <TextView
-                        android:id="@+id/card_update_info"
+                        android:id="@+id/one_answer_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
@@ -83,27 +84,27 @@
 
             </RelativeLayout>
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/one_answer_linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:id="@+id/one_answer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/one_answer_rel"
-                android:text="Answer goes here"
-                android:textSize="17dp"
-                android:textColor="@color/black"/>
-                >
+                app:layout_constraintBottom_toTopOf="@id/like_comment">
+
+            </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/like_comment"
                     android:layout_marginTop="15dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/one_answer"
+                    app:layout_constraintTop_toBottomOf="@id/one_answer_linear_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
@@ -124,12 +125,13 @@
                             android:layout_weight="1">
 
                             <ImageView
-                                android:id="@+id/card_downvote"
+                                android:id="@+id/one_answer_upvote_image"
                                 android:layout_width="17dp"
                                 android:layout_height="17dp"
-                                android:src="@drawable/ic_downvote_icon" />
+                                android:src="@drawable/ic_upvote_icon" />
 
                             <TextView
+                                android:id="@+id/one_answer_upvote_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="7dp"
@@ -144,12 +146,13 @@
                             android:layout_weight="1">
 
                             <ImageView
-                                android:id="@+id/card_upvote"
+                                android:id="@+id/one_answer_downvote_image"
                                 android:layout_width="17dp"
                                 android:layout_height="17dp"
-                                android:src="@drawable/ic_upvote_icon" />
+                                android:src="@drawable/ic_downvote_icon" />
 
                             <TextView
+                                android:id="@+id/one_answer_downvote_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="7dp"
@@ -172,7 +175,7 @@
                                 android:src="@drawable/ic_comment_icon" />
 
                             <TextView
-
+                                android:id="@+id/one_answer_comment_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="7dp"
@@ -199,6 +202,7 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/total_answers_count"
                     android:layout_marginTop="15dp"
                     android:background="@color/light_grey"
                     app:layout_constraintTop_toBottomOf="@id/like_comment"
@@ -211,7 +215,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    android:text="View Other 10 answers"
+                    android:text="View More Answers"
+                    android:textSize="17sp"
                     android:clickable="true"
                     android:onClick="onViewMoreAnswers"/>
 

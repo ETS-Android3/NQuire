@@ -1,7 +1,10 @@
 package com.adityagunjal.sdl_project.ui.login_sinup;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,7 +70,7 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
     }
 
     public void loginUser(){
-        String uname = usename.getText().toString().trim();
+        final String uname = usename.getText().toString().trim();
         final String pword = password.getText().toString().trim();
 
         if(uname.isEmpty() || pword.isEmpty()){
@@ -88,6 +91,15 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
                                             @Override
                                             public void onComplete(@NonNull Task<AuthResult> task) {
                                                 if(task.isSuccessful()){
+
+                                                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                                                    SharedPreferences.Editor editor = preferences.edit();
+                                                    editor.putString("username", uname);
+                                                    editor.putString("email" ,email);
+                                                    editor.putString("password", pword);
+                                                    editor.apply();
+                                                    editor.commit();
+
                                                     Intent i = new Intent(getActivity(), SplashActivity.class);
                                                     startActivity(i);
                                                     getActivity().finish();

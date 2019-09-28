@@ -4,20 +4,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.adityagunjal.sdl_project.models.ModelQuestion;
 import com.adityagunjal.sdl_project.ui.all_answers.AllAnswersFragment;
 import com.adityagunjal.sdl_project.ui.comment.CommentFragment;
 import com.adityagunjal.sdl_project.ui.one_answer.OneAnswerFragment;
+
+import java.io.Serializable;
 
 public class ShowAnswerActivity extends AppCompatActivity {
 
     Fragment currentFragment;
     boolean showComments = false;
+
+    ModelQuestion modelQuestion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +29,16 @@ public class ShowAnswerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_answer);
 
         currentFragment = new OneAnswerFragment();
+
+        Intent i = getIntent();
+        modelQuestion = (ModelQuestion) i.getSerializableExtra("EXTRA_QUESTION");
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ModelUser", i.getSerializableExtra("EXTRA_USER"));
+        bundle.putSerializable("ModelAnswer", i.getSerializableExtra("EXTRA_ANSWER"));
+        bundle.putSerializable("ModelQuestion", i.getSerializableExtra("EXTRA_QUESTION"));
+
+        currentFragment.setArguments(bundle);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, currentFragment).commit();
 
@@ -47,7 +61,14 @@ public class ShowAnswerActivity extends AppCompatActivity {
 
     public void onViewMoreAnswers(View view){
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, new AllAnswersFragment()).addToBackStack(null).commit();
+        Fragment allAnswersFragment = new AllAnswersFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ModelQuestion", modelQuestion);
+
+        allAnswersFragment.setArguments(bundle);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, allAnswersFragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -61,4 +82,5 @@ public class ShowAnswerActivity extends AppCompatActivity {
     public void onBackPressed(View view){
         this.finish();
     }
+
 }

@@ -1,8 +1,9 @@
 package com.adityagunjal.sdl_project.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class ModelQuestion {
+public class ModelQuestion implements Serializable {
     public String text, date, userID, username;
     public int answers;
     public Object timestamp;
