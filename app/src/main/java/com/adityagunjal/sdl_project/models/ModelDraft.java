@@ -1,47 +1,42 @@
 package com.adityagunjal.sdl_project.models;
 
+import java.util.HashMap;
+
 public class ModelDraft {
-    public int qid, aid;
-    public String question, answer;
+    public String userID, questionID,answerID;
+    public HashMap<String, String> answer;
 
     public ModelDraft(){}
 
-    public ModelDraft(int qid, int aid, String question, String answer) {
-        this.qid = qid;
-        this.aid = aid;
-        this.question = question;
-        this.answer = answer;
+    public ModelDraft(String userID, String questionID, HashMap<String, String> answer) {
+       this.userID = userID;
+       this.questionID = questionID;
+
+       this.answer = answer;
     }
 
-    public int getQid() {
-        return qid;
+    public String getUserID() {
+        return userID;
     }
 
-    public void setQid(int qid) {
-        this.qid = qid;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
-    public int getAid() {
-        return aid;
+    public String getQuestionID() {
+        return questionID;
     }
 
-    public void setAid(int aid) {
-        this.aid = aid;
+    public void setQuestionID(String questionID) {
+        this.questionID = questionID;
     }
 
-    public String getQuestion() {
-        return question;
-    }
 
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public String getAnswer() {
+    public HashMap<String, String> getAnswer() {
         return answer;
     }
 
-    public void setAnswer(String answer) {
+    public void setAnswer(HashMap<String, String> answer) {
         this.answer = answer;
     }
 }

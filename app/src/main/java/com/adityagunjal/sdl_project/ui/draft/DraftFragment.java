@@ -11,11 +11,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.adityagunjal.sdl_project.R;
+import com.adityagunjal.sdl_project.adapters.AdapterAnswer;
 import com.adityagunjal.sdl_project.adapters.AdapterDraft;
+import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelDraft;
-
+import com.adityagunjal.sdl_project.models.ModelQuestion;
+import com.adityagunjal.sdl_project.models.ModelUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 import java.util.ArrayList;
@@ -27,17 +38,36 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
     RecyclerView recyclerView;
     ArrayList<ModelDraft> modelDraftArrayList = new ArrayList<>();
     AdapterDraft adapterDraft;
+    ModelUser modelUser;
+    ModelQuestion modelQuestion;
+    ModelAnswer modelAnswer;
+
+
+
+
+    int pageLimit = 10;
+    String offset;
+
+    TextView questionText;
+    LinearLayout answerLinearLayout;
+
+    RelativeLayout userInfo;
+
+    ImageView upvoteImage, downvoteImage;
+    CircleImageView profilePic;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_draft, container, false);
-
+        Bundle bundle = this.getArguments();
+        modelUser = (ModelUser) bundle.getSerializable("ModelUser");
+        modelQuestion = (ModelQuestion) bundle.getSerializable("ModelQuestion");
+        modelAnswer = (ModelAnswer) bundle.getSerializable("ModelAnswer");
         recyclerView = view.findViewById(R.id.recycler_view_drafts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        CircleImageView imageButton = view.findViewById(R.id.back_button_icon);
-        imageButton.setOnClickListener(this);
+        questionText = view.findViewById(R.id.draft_card_question);
 
         adapterDraft = new AdapterDraft(getActivity(), modelDraftArrayList);
         recyclerView.setAdapter(adapterDraft);
@@ -48,15 +78,22 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
     }
 
     public void populateRecyclerView(){
-        modelDraftArrayList.add(new ModelDraft(1,1,"Question1","Answer1"));
-        modelDraftArrayList.add(new ModelDraft(2,2,"Question2","Answer2"));
-        modelDraftArrayList.add(new ModelDraft(3,3,"Question3","Answer3"));
-        modelDraftArrayList.add(new ModelDraft(4,4,"Question4","Answer4"));
-        modelDraftArrayList.add(new ModelDraft(5,5,"Question5","Answer5"));
-        modelDraftArrayList.add(new ModelDraft(6,6,"Question6","Answer6"));
-        modelDraftArrayList.add(new ModelDraft(7,7,"Question7","Answer7"));
-        modelDraftArrayList.add(new ModelDraft(8,8,"Question8","Answer8"));
-        modelDraftArrayList.add(new ModelDraft(9,9,"Question9","Answer9"));
+
+        FirebaseDatabase.getInstance().getReference("Drafts")
+                .orderByChild("draftID")
+                .startAt(modelQuestion.getqID())
+                .limitToFirst(pageLimit)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
     }
 
@@ -66,4 +103,7 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
             getActivity().onBackPressed();
         }
     }
+
+
+
 }

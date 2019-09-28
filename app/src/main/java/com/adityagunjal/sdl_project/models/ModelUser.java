@@ -5,9 +5,27 @@ import java.util.ArrayList;
 
 public class ModelUser implements Serializable {
     public String firstName, lastName, username, email, registrationID, imagePath, bio;
-    int questionCount, answerCount;
+    int questionCount, answerCount,draftCount;
     public ArrayList<String> questionsArrayList;
+
+    public int getDraftCount() {
+        return draftCount;
+    }
+
+    public void setDraftCount(int draftCount) {
+        this.draftCount = draftCount;
+    }
+
+    public ArrayList<String> getDraftsArrayList() {
+        return draftsArrayList;
+    }
+
+    public void setDraftsArrayList(ArrayList<String> draftsArrayList) {
+        this.draftsArrayList = draftsArrayList;
+    }
+
     public ArrayList<String> answersArrayList;
+    public ArrayList<String> draftsArrayList;
 
     public ModelUser(){}
 

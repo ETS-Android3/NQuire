@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -28,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adityagunjal.sdl_project.models.ModelAnswer;
+import com.adityagunjal.sdl_project.models.ModelDraft;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -85,7 +88,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
     }
 
     public void onBackPressed(View view) {
-        super.onBackPressed();
+       saveDraftConfirm();
     }
 
     @Override
@@ -367,6 +370,115 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
         img.recycle();
         return rotatedImg;
+    }
+
+    void saveAsDraft()
+    {
+        ModelDraft modelDraft = new ModelDraft(SplashActivity.userInfo.getUserID(), questionID, answer);
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Answers");
+        final String draftID = ref.push().getKey();
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Saving Draft");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+
+        ref.child(draftID).setValue(modelDraft)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            FirebaseDatabase.getInstance().getReference("Users")
+                                    .child(SplashActivity.userInfo.getUserID())
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
+                                            ArrayList<String> draftsArrayList = modelUser.getDraftsArrayList();
+                                            try{
+                                                draftsArrayList.add(draftID);
+                                            }catch(NullPointerException e){
+                                                draftsArrayList = new ArrayList<>();
+                                                draftsArrayList.add(draftID);
+                                            }
+                                            modelUser.setDraftCount(modelUser.getDraftCount() + 1);
+                                            modelUser.setDraftsArrayList(draftsArrayList);
+                                            FirebaseDatabase.getInstance().getReference("Users")
+                                                    .child(SplashActivity.userInfo.getUserID())
+                                                    .setValue(modelUser)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if(task.isSuccessful()) {
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(AnswerQuestionActivity.this, "Draft Saved Successfully", Toast.LENGTH_SHORT).show();
+                                                                AnswerQuestionActivity.this.finish();
+                                                                FirebaseDatabase.getInstance().getReference("Users")
+                                                                        .child(userID)
+                                                                        .child("drafts")
+                                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                            @Override
+                                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                                int draftsCount = dataSnapshot.getValue(Integer.class);
+                                                                                dataSnapshot.getRef().setValue(draftsCount + 1);
+                                                                            }
+
+                                                                            @Override
+                                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                            }
+                                                                        });
+                                                            } else {
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(AnswerQuestionActivity.this, "Failed to save Draft", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                        } else {
+                            progressDialog.dismiss();
+                            Toast.makeText(AnswerQuestionActivity.this, "Failed to Save Draft", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
+    void saveDraftConfirm()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AnswerQuestionActivity.this,android.R.style.Theme_Material_Light_Dialog_Alert);
+
+        builder.setTitle("Confirm");
+        builder.setMessage("Are you sure,you want to leave?");
+
+        builder.setPositiveButton("Save As Draft", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                saveAsDraft();
+
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("Clear", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
 }
