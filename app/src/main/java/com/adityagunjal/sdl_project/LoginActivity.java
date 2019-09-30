@@ -47,10 +47,10 @@ public class LoginActivity extends AppCompatActivity {
         String email = preferences.getString("email", null);
         String password = preferences.getString("password", null);
 
-        if(username != null && password != null){
+        /*if(username != null && password != null){
             startActivity(new Intent(getApplicationContext(), SplashActivity.class));
             finish();
-        }
+        }*/
     }
 
     public void onSignUpClick(View view){

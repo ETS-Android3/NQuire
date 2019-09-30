@@ -62,7 +62,7 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
 
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions").child(qID).child("text");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 qText = dataSnapshot.getValue(String.class);

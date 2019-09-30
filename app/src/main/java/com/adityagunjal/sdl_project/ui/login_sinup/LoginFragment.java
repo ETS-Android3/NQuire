@@ -92,13 +92,13 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
                                             public void onComplete(@NonNull Task<AuthResult> task) {
                                                 if(task.isSuccessful()){
 
-                                                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                                                    /*SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                                                     SharedPreferences.Editor editor = preferences.edit();
                                                     editor.putString("username", uname);
                                                     editor.putString("email" ,email);
                                                     editor.putString("password", pword);
                                                     editor.apply();
-                                                    editor.commit();
+                                                    editor.commit();*/
 
                                                     Intent i = new Intent(getActivity(), SplashActivity.class);
                                                     startActivity(i);

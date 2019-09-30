@@ -3,6 +3,7 @@ package com.adityagunjal.sdl_project.ui.one_answer;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,8 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
 
     ImageView upvoteImage, downvoteImage;
     CircleImageView profilePic;
+
+    DatabaseReference answerRef;
 
     @Nullable
     @Override
@@ -143,22 +146,9 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
                     }
                 });
 
-        DatabaseReference answerRef = FirebaseDatabase.getInstance().getReference("Answers/" + modelAnswer.getAnswerID());
+        answerRef = FirebaseDatabase.getInstance().getReference("Answers/" + modelAnswer.getAnswerID());
 
-        answerRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ModelAnswer currentAnswer = dataSnapshot.getValue(ModelAnswer.class);
-                upvoteCount.setText(Integer.toString(currentAnswer.getUpvotes()));
-                downvoteCount.setText(Integer.toString(currentAnswer.getDownvotes()));
-                commentCount.setText(Integer.toString(currentAnswer.getComments()) + " comments");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        answerRef.addValueEventListener(listener);
     }
 
     View.OnClickListener showProfile = new View.OnClickListener() {
@@ -171,6 +161,22 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
         }
     };
 
+    ValueEventListener listener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            ModelAnswer currentAnswer = dataSnapshot.getValue(ModelAnswer.class);
+
+            upvoteCount.setText(Integer.toString(currentAnswer.getUpvotes()));
+            downvoteCount.setText(Integer.toString(currentAnswer.getDownvotes()));
+            commentCount.setText(Integer.toString(currentAnswer.getComments()) + " comments");
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.one_answer_upvote_image){
@@ -179,5 +185,11 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
         if(view.getId() == R.id.one_answer_downvote_image){
 
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        answerRef.removeEventListener(listener);
     }
 }
