@@ -7,6 +7,9 @@ public class ModelUser implements Serializable {
     public String firstName, lastName, username, email, registrationID, imagePath, bio;
     int questionCount, answerCount,draftCount;
     public ArrayList<String> questionsArrayList;
+    public ArrayList<String> answersArrayList;
+    public ArrayList<String> chatsList;
+    public ArrayList<String> draftsArrayList;
 
     public int getDraftCount() {
         return draftCount;
@@ -20,12 +23,9 @@ public class ModelUser implements Serializable {
         return draftsArrayList;
     }
 
-    public void setDraftsArrayList(ArrayList<String> draftsArrayList) {
-        this.draftsArrayList = draftsArrayList;
+    public void setDraftsArrayList(ArrayList<String> draftList) {
+        this.draftsArrayList = draftList;
     }
-
-    public ArrayList<String> answersArrayList;
-    public ArrayList<String> draftsArrayList;
 
     public ModelUser(){}
 
@@ -117,6 +117,14 @@ public class ModelUser implements Serializable {
         this.answersArrayList = answersArrayList;
     }
 
+    public ArrayList<String> getChatsList() {
+        return chatsList;
+    }
+
+    public void setChatsList(ArrayList<String> chatsList) {
+        this.chatsList = chatsList;
+    }
+
     public ModelUser(String firstName, String lastName, String username, String email, String registrationID){
         this.firstName = firstName;
         this.lastName = lastName;
@@ -127,6 +135,5 @@ public class ModelUser implements Serializable {
         this.bio = "-";
         this.answerCount = 0;
         this.questionCount = 0;
-        this.draftCount = 0;
     }
 }

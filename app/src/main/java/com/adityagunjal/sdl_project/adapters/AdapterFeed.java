@@ -129,9 +129,9 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(view.getContext(), ShowAnswerActivity.class);
-                i.putExtra("EXTRA_USER", (Serializable) modelUser);
-                i.putExtra("EXTRA_QUESTION", (Serializable) modelQuestion);
-                i.putExtra("EXTRA_ANSWER", (Serializable) modelAnswer);
+                i.putExtra("EXTRA_USER", modelUser);
+                i.putExtra("EXTRA_QUESTION", modelQuestion);
+                i.putExtra("EXTRA_ANSWER",  modelAnswer);
                 context.startActivity(i);
             }
         });

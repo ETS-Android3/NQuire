@@ -1,5 +1,6 @@
 package com.adityagunjal.sdl_project.ui.one_answer;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,13 +17,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.adityagunjal.sdl_project.ProfileActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.HashMap;
@@ -31,7 +38,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class OneAnswerFragment extends Fragment {
+public class OneAnswerFragment extends Fragment implements View.OnClickListener {
 
     ModelUser modelUser;
     ModelQuestion modelQuestion;
@@ -70,6 +77,11 @@ public class OneAnswerFragment extends Fragment {
         upvoteImage = rootView.findViewById(R.id.one_answer_upvote_image);
         downvoteImage = rootView.findViewById(R.id.one_answer_downvote_image);
         profilePic = rootView.findViewById(R.id.one_answer_profile_pic);
+
+        upvoteImage.setOnClickListener(this);
+        downvoteImage.setOnClickListener(this);
+
+        userInfo.setOnClickListener(showProfile);
 
         setInfo();
 
@@ -130,6 +142,42 @@ public class OneAnswerFragment extends Fragment {
                         }
                     }
                 });
+
+        DatabaseReference answerRef = FirebaseDatabase.getInstance().getReference("Answers/" + modelAnswer.getAnswerID());
+
+        answerRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ModelAnswer currentAnswer = dataSnapshot.getValue(ModelAnswer.class);
+                upvoteCount.setText(Integer.toString(currentAnswer.getUpvotes()));
+                downvoteCount.setText(Integer.toString(currentAnswer.getDownvotes()));
+                commentCount.setText(Integer.toString(currentAnswer.getComments()) + " comments");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
+    View.OnClickListener showProfile = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent i = new Intent(getActivity(), ProfileActivity.class);
+            i.putExtra("EXTRA_USER", modelUser);
+            i.putExtra("EXTRA_USER_ID", modelAnswer.getUserID());
+            startActivity(i);
+        }
+    };
+
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == R.id.one_answer_upvote_image){
+
+        }
+        if(view.getId() == R.id.one_answer_downvote_image){
+
+        }
+    }
 }

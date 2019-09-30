@@ -1,6 +1,10 @@
 package com.adityagunjal.sdl_project.models;
 
-public class ModelChatUser {
+import java.io.Serializable;
+
+public class ModelChatUser implements Serializable {
+    String userID;
+    String chatID;
     String username, lastMessage, profilePicPath, lastUpdated;
 
     public String getUsername() {
@@ -33,6 +37,22 @@ public class ModelChatUser {
 
     public void setLastMessage(String lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getChatID() {
+        return chatID;
+    }
+
+    public void setChatID(String chatID) {
+        this.chatID = chatID;
     }
 
     public ModelChatUser(){}

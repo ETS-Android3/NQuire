@@ -1,37 +1,46 @@
 package com.adityagunjal.sdl_project.models;
 
-public class ModelChat {
-    String sender, message, time;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+
+public class ModelChat implements Serializable {
+    public String chatID;
+    public long timestamp;
+    public ArrayList<String> participants;
+    public ArrayList<ModelMessage> messages;
 
     public ModelChat(){}
 
-    public ModelChat(String sender, String message, String time) {
-        this.sender = sender;
-        this.message = message;
-        this.time = time;
+    public ModelChat(String chatID, ArrayList<String> participants){
+        this.chatID = chatID;
+        this.participants = participants;
+        timestamp = -1 * new Date().getTime();
     }
 
-    public String getSender() {
-        return sender;
+    public String getChatID() {
+        return chatID;
     }
 
-    public void setSender(String sender) {
-        this.sender = sender;
+    public void setChatID(String chatID) {
+        this.chatID = chatID;
     }
 
-    public String getMessage() {
-        return message;
+    public ArrayList<String> getParticipants() {
+        return participants;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setParticipants(ArrayList<String> participants) {
+        this.participants = participants;
     }
 
-    public String getTime() {
-        return time;
+    public ArrayList<ModelMessage> getMessages() {
+        return messages;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setMessages(ArrayList<ModelMessage> messages) {
+        this.messages = messages;
     }
+
 }

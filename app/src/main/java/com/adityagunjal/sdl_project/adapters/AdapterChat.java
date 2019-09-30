@@ -15,18 +15,21 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adityagunjal.sdl_project.R;
-import com.adityagunjal.sdl_project.models.ModelChat;
+import com.adityagunjal.sdl_project.SplashActivity;
+import com.adityagunjal.sdl_project.models.ModelMessage;
 
 import java.util.ArrayList;
 
 public class AdapterChat extends RecyclerView.Adapter<AdapterChat.MyViewHolder>{
 
     Context context;
-    public ArrayList<ModelChat> modelChatArrayList;
+    public ArrayList<ModelMessage> modelMessageArrayList;
 
-    public AdapterChat(Context context, ArrayList<ModelChat> modelChatArrayList){
+    String userName = SplashActivity.userInfo.getModelUser().getUsername();
+
+    public AdapterChat(Context context, ArrayList<ModelMessage> modelMessageArrayList){
         this.context = context;
-        this.modelChatArrayList = modelChatArrayList;
+        this.modelMessageArrayList = modelMessageArrayList;
     }
 
 
@@ -39,15 +42,15 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.MyViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ModelChat modelChat = modelChatArrayList.get(position);
+        ModelMessage modelMessage = modelMessageArrayList.get(position);
 
-        if(!modelChat.getSender().equals("Aditya")){
+        if(!modelMessage.getSenderName().equals(userName)){
             holder.message.setTextColor(Color.parseColor("#000000"));
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             layoutParams.gravity = Gravity.LEFT;
             float factor = holder.card.getContext().getResources().getDisplayMetrics().density;
-            layoutParams.leftMargin = (int)(20 * factor);
-            layoutParams.rightMargin = (int)(20 * factor);
+            layoutParams.leftMargin = (int)(10 * factor);
+            layoutParams.rightMargin = (int)(50 * factor);
             layoutParams.topMargin = (int)(8 * factor);
             layoutParams.bottomMargin = (int)(8 * factor);
             holder.card.setLayoutParams(layoutParams);
@@ -59,8 +62,8 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.MyViewHolder>{
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             layoutParams.gravity = Gravity.RIGHT;
             float factor = holder.card.getContext().getResources().getDisplayMetrics().density;
-            layoutParams.leftMargin = (int)(20 * factor);
-            layoutParams.rightMargin = (int)(20 * factor);
+            layoutParams.leftMargin = (int)(50 * factor);
+            layoutParams.rightMargin = (int)(10 * factor);
             layoutParams.topMargin = (int)(8 * factor);
             layoutParams.bottomMargin = (int)(8 * factor);
             holder.card.setLayoutParams(layoutParams);
@@ -69,13 +72,13 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.MyViewHolder>{
             holder.time.setTextColor(Color.parseColor("#e4e4e4"));
         }
 
-        holder.message.setText(modelChat.getMessage());
-        holder.time.setText(modelChat.getTime());
+        holder.message.setText(modelMessage.getText());
+        holder.time.setText(modelMessage.getDate().substring(0, 16).trim());
     }
 
     @Override
     public int getItemCount() {
-        return modelChatArrayList.size();
+        return modelMessageArrayList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
@@ -95,8 +98,8 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.MyViewHolder>{
         }
     }
 
-    public void addItem(ModelChat modelChat){
-        modelChatArrayList.add(modelChat);
+    public void addItem(ModelMessage modelMessage){
+        modelMessageArrayList.add(modelMessage);
         notifyDataSetChanged();
     }
 

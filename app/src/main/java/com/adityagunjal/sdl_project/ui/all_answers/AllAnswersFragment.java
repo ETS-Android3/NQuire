@@ -138,6 +138,7 @@ public class AllAnswersFragment extends Fragment implements View.OnClickListener
             i.putExtra("EXTRA_ANSWERS_COUNT",modelQuestion.getAnswers());
 
             getActivity().startActivity(i);
+            getActivity().finish();
         }
     }
 }

@@ -28,10 +28,12 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.adityagunjal.sdl_project.ChatActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.SplashActivity;
 import com.adityagunjal.sdl_project.interfaces.CustomeOnBackPressed;
 import com.adityagunjal.sdl_project.interfaces.DataChanged;
+import com.adityagunjal.sdl_project.models.ModelChat;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,6 +45,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -50,6 +53,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -70,18 +75,26 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
     CircleImageView circleImageView;
     ImageView editProfile;
     TextView username, bio, answerCount, questionCount, name, emailID, registrationID, editProfileText;
-    Button saveButton;
+    Button saveButton, chatButton;
     ImageButton addPhoto;
+
+    LinearLayout editLayout;
 
     View rootView;
 
-    boolean isEditEnabled = false;
+    boolean isEditEnabled = true;
     boolean isEditModeOn = false;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Intent i = getActivity().getIntent();
+
+        ModelUser user = (ModelUser)i.getSerializableExtra("EXTRA_USER");
+        String uid = i.getStringExtra("EXTRA_USER_ID");
+
         rootView = inflater.inflate(R.layout.fragment_show_profile, container, false);
         circleImageView = rootView.findViewById(R.id.show_profile_circle_image);
         username = rootView.findViewById(R.id.tv_name);
@@ -93,6 +106,9 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
         registrationID = rootView.findViewById(R.id.user_registration_id);
         editProfile = rootView.findViewById(R.id.edit_profile_button);
         editProfileText = rootView.findViewById(R.id.edit_profile_text);
+        chatButton = rootView.findViewById(R.id.chat_button);
+
+        editLayout = rootView.findViewById(R.id.edit_layout);
 
         editProfile.setOnClickListener(onEditProfileClicked);
         editProfileText.setOnClickListener(onEditProfileClicked);
@@ -108,9 +124,18 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
 
-
-
-        getUserInfo();
+        if(user != null){
+            isEditEnabled = false;
+            editLayout.setVisibility(View.GONE);
+            chatButton.setVisibility(View.VISIBLE);
+            setUserInfo(user, uid, null);
+            chatButton.setOnClickListener(onSendMessageClicked);
+        }else{
+            editLayout.setVisibility(View.VISIBLE);
+            isEditEnabled = true;
+            editProfile.setVisibility(View.VISIBLE);
+            getUserInfo();
+        }
 
         return rootView;
     }
@@ -157,7 +182,21 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
         this.profilePic = profilePic;
 
         if (profilePic == null) {
-            circleImageView.setImageResource(R.drawable.ic_profile_icon);
+            if(modelUser.getImagePath().equals("default")){
+                circleImageView.setImageResource(R.drawable.ic_profile_icon);
+            }else{
+                FirebaseStorage.getInstance().getReference(modelUser.getImagePath())
+                        .getBytes(1024 * 1024)
+                        .addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                            @Override
+                            public void onComplete(@NonNull Task<byte[]> task) {
+                                if(task.isSuccessful())
+                                    circleImageView.setImageBitmap(BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length));
+                                else
+                                    circleImageView.setImageResource(R.drawable.ic_profile_icon);
+                            }
+                        });
+            }
         } else {
             circleImageView.setImageBitmap(profilePic);
         }
@@ -301,6 +340,90 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
 
             imageDialogue.show();
 
+        }
+    };
+
+    View.OnClickListener onSendMessageClicked = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            //ArrayList<String> userChats = SplashActivity.userInfo.getModelUser().getChatsArrayList();
+
+            DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chats").push();
+
+            final String chatID = chatRef.getKey();
+
+            FirebaseDatabase.getInstance().getReference("Users")
+                    .child(SplashActivity.userInfo.getUserID())
+                    .child("chatsList")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            ArrayList<String> chatsList = (ArrayList<String>) dataSnapshot.getValue();
+                            if(chatsList == null){
+                                chatsList = new ArrayList<>();
+                            }
+                            if(!chatsList.contains(chatID)){
+                                chatsList.add(chatID);
+                                dataSnapshot.getRef().setValue(chatsList);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+            FirebaseDatabase.getInstance().getReference("Users")
+                    .child(userID)
+                    .child("chatsList")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            ArrayList<String> chatsList = (ArrayList<String>) dataSnapshot.getValue();
+                            if(chatsList == null){
+                                chatsList = new ArrayList<>();
+                            }
+                            if(!chatsList.contains(chatID)){
+                                chatsList.add(chatID);
+                                dataSnapshot.getRef().setValue(chatsList);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+            ArrayList<String> participants = new ArrayList<>();
+            participants.add(userID);
+            participants.add(SplashActivity.userInfo.getUserID());
+
+            ModelChat chat = new ModelChat(chatID, participants);
+
+            FirebaseDatabase.getInstance().getReference("Chats")
+                    .child(chatID)
+                    .setValue(chat)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()){
+
+                            }else{
+                                Toast.makeText(getActivity(), "Something went wrong !", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+            Intent i = new Intent(getActivity(), ChatActivity.class);
+            i.putExtra("EXTRA_FLAG", 1);
+            i.putExtra("EXTRA_USER_ID", userID);
+            i.putExtra("EXTRA_USER", modelUser);
+            i.putExtra("EXTRA_CHAT", chat);
+            startActivity(i);
+            getActivity().finish();
         }
     };
 
