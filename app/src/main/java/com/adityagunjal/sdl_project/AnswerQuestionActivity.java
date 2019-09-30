@@ -23,6 +23,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,16 +52,20 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 
 public class AnswerQuestionActivity extends AppCompatActivity {
 
-    String questionID, questionText, userID, username;
+    String questionID, questionText, userID, username,draftId;
     ImageView imageView;
     LinearLayout answerLinearLayout;
     EditText editText;
 
+
     HashMap<String, String> answer = new HashMap<>();
+    HashMap<String,String> draft = new HashMap<>();
 
     int currentIndex = -1;
     int totalViews = 0;
@@ -69,17 +74,61 @@ public class AnswerQuestionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer_question);
-
-        Intent i = getIntent();
-        questionID = i.getStringExtra("EXTRA_QUESTION_ID");
-        questionText = i.getStringExtra("EXTRA_QUESTION_TEXT");
-        userID = i.getStringExtra("EXTRA_USER_ID");
-        username = i.getStringExtra("EXTRA_USERNAME");
-
-        TextView questionTextView = findViewById(R.id.question_text);
-        questionTextView.setText(questionText);
-
         answerLinearLayout = findViewById(R.id.answer_linear_layout);
+        TextView questionTextView = findViewById(R.id.question_text);
+        Intent i = getIntent();
+       String flag = i.getStringExtra("EXTRA_FLAG");
+       if(flag == "d")
+       {
+          draftId =  i.getStringExtra("EXTRA_DRAFT_ID");
+          questionID = i.getStringExtra("EXTRA_QUESTION_ID");
+          userID = i.getStringExtra("EXTRA_USER_ID");
+          draft = (HashMap<String, String>) i.getSerializableExtra("EXTRA_DRAFT_ANSWER");
+
+           Iterator draftIterator = draft.entrySet().iterator();
+           while(draftIterator.hasNext()){
+               Map.Entry<String, String> answerElement = (Map.Entry) draftIterator.next();
+               String key = answerElement.getKey();
+
+               if(key.charAt(0) == 't'){
+                   EditText editText = new EditText(answerLinearLayout.getContext());
+                   editText.setText(answerElement.getValue());
+                   editText.setTextColor(getResources().getColor(R.color.black));
+                   editText.setTextSize(17);
+                   answerLinearLayout.addView(editText);
+               }else{
+                   final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                   //layoutParams.topMargin = (int)(factor * 7);
+                   //layoutParams.bottomMargin = (int)(factor * 7);
+                   final ImageView imageView = new ImageView(answerLinearLayout.getContext());
+                   imageView.setLayoutParams(layoutParams);
+                   answerLinearLayout.addView(imageView);
+
+                   FirebaseStorage.getInstance().getReference(answerElement.getValue())
+                           .getBytes(1024 * 1024)
+                           .addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                               @Override
+                               public void onComplete(@NonNull Task<byte[]> task) {
+                                   if(task.isSuccessful()){
+                                       imageView.setImageBitmap(BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length));
+                                   }
+                               }
+                           });
+               }
+           }
+       }
+       else {
+           questionID = i.getStringExtra("EXTRA_QUESTION_ID");
+           questionText = i.getStringExtra("EXTRA_QUESTION_TEXT");
+           userID = i.getStringExtra("EXTRA_USER_ID");
+           username = i.getStringExtra("EXTRA_USERNAME");
+           questionTextView.setText(questionText);
+       }
+
+
+
+
+
 
         editText = findViewById(R.id.edit_text1);
         editText.setId(0);
@@ -113,7 +162,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
             imageParams.topMargin = (int)(factor * 10);
             imageParams.bottomMargin = (int) (factor * 10);
             imageView.setLayoutParams(imageParams);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             final String imageID = UUID.randomUUID().toString();
 
@@ -140,11 +189,13 @@ public class AnswerQuestionActivity extends AppCompatActivity {
                             imageView.setTag("images/answers/" + userID + "/" + imageID);
                             answerLinearLayout.addView(imageView, currentIndex + 1);
 
-                            if(editText.getText().toString().equals("")){
-                                answerLinearLayout.removeView(editText);
-                                currentIndex--;
-                            }
 
+                               if(editText.getText().toString().equals("")){
+                                   answerLinearLayout.removeView(editText);
+                                   currentIndex--;}
+
+
+                           // Toast.makeText(context, "current index:"+currentIndex+" cc"+answerLinearLayout.getChildCount(), Toast.LENGTH_SHORT).show();
                             if(currentIndex + 1 == answerLinearLayout.getChildCount() - 1){
                                 editText = new EditText(context);
                                 float factor = editText.getContext().getResources().getDisplayMetrics().density;
@@ -158,6 +209,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
                                 editText.setHint("Continue Answer Here ...");
                                 editText.setHintTextColor(getResources().getColor(R.color.dark_grey));
                                 editText.setBackground(null);
+                                editText.requestFocus();
                                 editText.setTextColor(getResources().getColor(R.color.answer_text_color));
                                 answerLinearLayout.addView(editText);
                             }
@@ -374,11 +426,26 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
     void saveAsDraft()
     {
-        ModelDraft modelDraft = new ModelDraft(SplashActivity.userInfo.getUserID(), questionID, answer);
+        for(int i = 0; i < answerLinearLayout.getChildCount(); i++){
+            View currentView = answerLinearLayout.getChildAt(i);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Answers");
+            if(currentView instanceof EditText){
+
+                String text = ((EditText) currentView).getText().toString();
+                draft.put("t" + i, text);
+
+            }else if(currentView instanceof ImageView){
+
+                String tag = (String) currentView.getTag();
+                draft.put("i" + i, tag);
+
+            }
+        }
+
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Drafts");
         final String draftID = ref.push().getKey();
-
+        ModelDraft modelDraft = new ModelDraft(SplashActivity.userInfo.getUserID(), questionID, draft);
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Saving Draft");
         progressDialog.setCanceledOnTouchOutside(false);
@@ -416,7 +483,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
                                                                 AnswerQuestionActivity.this.finish();
                                                                 FirebaseDatabase.getInstance().getReference("Users")
                                                                         .child(userID)
-                                                                        .child("drafts")
+                                                                        .child("draftCount")
                                                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                                                             @Override
                                                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -453,6 +520,9 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
     void saveDraftConfirm()
     {
+
+
+
         AlertDialog.Builder builder = new AlertDialog.Builder(AnswerQuestionActivity.this,android.R.style.Theme_Material_Light_Dialog_Alert);
 
         builder.setTitle("Confirm");

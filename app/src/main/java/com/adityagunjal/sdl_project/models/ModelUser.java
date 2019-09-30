@@ -127,5 +127,6 @@ public class ModelUser implements Serializable {
         this.bio = "-";
         this.answerCount = 0;
         this.questionCount = 0;
+        this.draftCount = 0;
     }
 }

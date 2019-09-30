@@ -1,18 +1,27 @@
 package com.adityagunjal.sdl_project.models;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class ModelDraft {
-    public String userID, questionID,answerID;
-    public HashMap<String, String> answer;
+public class ModelDraft implements Serializable {
+    public String userID, questionID,draftID;
+    public HashMap<String, String>draft;
 
     public ModelDraft(){}
 
-    public ModelDraft(String userID, String questionID, HashMap<String, String> answer) {
+    public String getDraftID() {
+        return draftID;
+    }
+
+    public void setDraftID(String draftID) {
+        this.draftID = draftID;
+    }
+
+    public ModelDraft(String userID, String questionID, HashMap<String, String> draft) {
        this.userID = userID;
        this.questionID = questionID;
-
-       this.answer = answer;
+       this.draftID = draftID;
+       this.draft = draft;
     }
 
     public String getUserID() {
@@ -31,12 +40,11 @@ public class ModelDraft {
         this.questionID = questionID;
     }
 
-
-    public HashMap<String, String> getAnswer() {
-        return answer;
+    public HashMap<String, String> getDraft() {
+        return draft;
     }
 
-    public void setAnswer(HashMap<String, String> answer) {
-        this.answer = answer;
+    public void setDraft(HashMap<String, String> draft) {
+        this.draft = draft;
     }
 }

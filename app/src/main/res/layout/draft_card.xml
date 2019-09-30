@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:text="Question 1"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="12dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="15dp"
                 android:textSize="24sp"
@@ -35,16 +35,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
-
-                    <TextView
-                        android:id="@+id/draft_card_answer_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Answer"
-                        android:textColor="@color/black"
-                        android:textSize="17sp"
-                        android:paddingLeft="10dp"/>
 
                 </LinearLayout>
 
@@ -59,7 +49,7 @@
 
                 <ImageButton
                     android:layout_marginLeft="10dp"
-                    android:id="@+id/imageButton2"
+                    android:id="@+id/edit_draft_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@null"
@@ -75,10 +65,11 @@
 
                 <ImageButton
                     android:layout_marginLeft="20dp"
-                    android:id="@+id/imageButton3"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@null"
+                    android:id="@+id/del_draft_button"
                     app:srcCompat="@drawable/del_draft" />
 
                 <TextView

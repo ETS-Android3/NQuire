@@ -14,6 +14,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -35,12 +36,12 @@ public class SettingsActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     FirebaseStorage firebaseStorage;
     StorageReference storageReference;
-    TextView tv_message,change_pass,del_message;
+    TextView tv_message,change_pass,del_message,em_message,change_email;
     SharedPreferences pref;
     AppCompatButton btn_change_password,btn_logout;
-    EditText et_old_password,et_new_password,et_confirm_password,del_pass,del_cpass;
+    EditText et_old_password,et_new_password,et_confirm_password,del_pass,del_cpass,em_pass,em_cpass,em_text;
     AlertDialog dialog;
-    ProgressBar progress,del_p;
+    ProgressBar progress,del_p,em_progress;
     View view,delView;
 
     FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
@@ -75,6 +76,7 @@ public class SettingsActivity extends AppCompatActivity {
                     tv_message.setVisibility(View.VISIBLE);
                     tv_message.setText("Invalid Password");
                     et_old_password.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    et_old_password.requestFocus();
                     Toast.makeText(SettingsActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -111,6 +113,7 @@ public class SettingsActivity extends AppCompatActivity {
                             del_message.setVisibility(View.VISIBLE);
                             del_message.setText("Invalid Password");
                             del_pass.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                            del_pass.requestFocus();
                             Toast.makeText(SettingsActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                             //Toast.makeText(SettingsActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                         }
@@ -118,10 +121,41 @@ public class SettingsActivity extends AppCompatActivity {
                 });
     }
 
-    void deactivateAccount(String password)
+    void changeEmail(String password, final String newEmail)
     {
         final String email = fuser.getEmail();
-        String userId = fuser.getUid();
+
+
+        AuthCredential credential = EmailAuthProvider.getCredential(email,password);
+
+        fuser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    fuser.updateEmail(newEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                em_progress.setVisibility(View.GONE);
+                                em_message.setVisibility(View.GONE);
+                                dialog.dismiss();
+                                Toast.makeText(SettingsActivity.this, "Password Updated", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(SettingsActivity.this, "Error in Updating password", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                } else {
+
+                    em_progress.setVisibility(View.GONE);
+                    em_message.setVisibility(View.VISIBLE);
+                    em_message.setText("Invalid Password");
+                    em_pass.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    em_pass.requestFocus();
+                    Toast.makeText(SettingsActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
 
     }
@@ -147,6 +181,14 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 delAccountConfirm();
+            }
+        });
+
+        change_email = findViewById(R.id.change_email_text);
+        change_email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showChangeEmailDialog();
             }
         });
 
@@ -206,6 +248,7 @@ public class SettingsActivity extends AppCompatActivity {
                     tv_message.setVisibility(View.VISIBLE);
                     tv_message.setText("Password Should Be Atleast 6 Characters");
                     et_new_password.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    et_new_password.requestFocus();
 
 
                 }
@@ -213,14 +256,16 @@ public class SettingsActivity extends AppCompatActivity {
                 {
                     tv_message.setVisibility(View.VISIBLE);
                     tv_message.setText("Passwords Do Not Match");
-                    et_new_password.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+
                     et_confirm_password.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    et_confirm_password.requestFocus();
 
                 }
                 else{
                     tv_message.setVisibility(View.VISIBLE);
                     tv_message.setText("Fields cannot empty");
                     et_old_password.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    et_old_password.requestFocus();
                 }
             }
         });
@@ -230,6 +275,8 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 tv_message.setVisibility(view.GONE);
                 et_old_password.getBackground().clearColorFilter();
+                et_confirm_password.getBackground().clearColorFilter();
+                et_new_password.getBackground().clearColorFilter();
             }
         });
 
@@ -237,6 +284,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tv_message.setVisibility(view.GONE);
+                et_confirm_password.getBackground().clearColorFilter();
+                et_old_password.getBackground().clearColorFilter();
                 et_new_password.getBackground().clearColorFilter();
             }
         });
@@ -246,6 +295,8 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 tv_message.setVisibility(view.GONE);
                 et_confirm_password.getBackground().clearColorFilter();
+                et_new_password.getBackground().clearColorFilter();
+                et_old_password.getBackground().clearColorFilter();
             }
         });
     }
@@ -303,14 +354,16 @@ public class SettingsActivity extends AppCompatActivity {
                 {
                     del_message.setVisibility(delView.VISIBLE);
                     del_message.setText("Passwords Do Not Match");
-                    del_pass.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+
                     del_cpass.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    del_cpass.requestFocus();
 
                 }
                 else{
                     del_message.setVisibility(delView.VISIBLE);
                     del_message.setText("Fields cannot empty");
                     del_pass.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    del_pass.requestFocus();
                 }
             }
         });
@@ -320,6 +373,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 del_message.setVisibility(delView.GONE);
                 del_pass.getBackground().clearColorFilter();
+                del_cpass.getBackground().clearColorFilter();
             }
         });
 
@@ -327,7 +381,113 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 del_message.setVisibility(delView.GONE);
+                del_pass.getBackground().clearColorFilter();
                 del_cpass.getBackground().clearColorFilter();
+            }
+        });
+
+
+    }
+
+    public void showChangeEmailDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this,android.R.style.Theme_Material_Light_Dialog_Alert);
+
+        delView = getLayoutInflater().inflate(R.layout.change_email,null);
+        em_pass = delView.findViewById(R.id.email_old_password);
+        em_cpass= delView.findViewById(R.id.email_confirm_password);
+        em_text = delView.findViewById(R.id.email_text);
+        em_message = delView.findViewById(R.id.em_message);
+        em_progress = delView.findViewById(R.id.em_progress);
+        builder.setView(delView);
+
+        String titleText = "Update Email ID";
+        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.BLACK);
+        SpannableStringBuilder sBuilder = new SpannableStringBuilder(titleText);
+        sBuilder.setSpan(
+                foregroundColorSpan,
+                0,
+                titleText.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+        builder.setTitle(titleText);
+        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String pass = em_pass.getText().toString();
+                String cpass = em_cpass.getText().toString();
+                String email = em_text.getText().toString();
+
+                if(!pass.isEmpty() && !cpass.isEmpty()   && pass.equals(cpass) && Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                    changeEmail(pass,email);
+                    em_progress.setVisibility(delView.VISIBLE);
+
+
+                }
+                else if(!pass.equals(cpass))
+                {
+                    em_message.setVisibility(delView.VISIBLE);
+                    em_message.setText("Passwords Do Not Match");
+                    em_cpass.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    em_cpass.requestFocus();
+
+                }
+                else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                    em_message.setVisibility(delView.VISIBLE);
+                    em_message.setText("Please Enter Valid Email Address");
+                    em_text.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    em_text.requestFocus();
+
+
+                }
+                else{
+                    em_message.setVisibility(delView.VISIBLE);
+                    em_message.setText("Fields cannot empty");
+                    em_pass.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    em_pass.requestFocus();
+                }
+            }
+        });
+
+        em_pass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                em_message.setVisibility(delView.GONE);
+                em_pass.getBackground().clearColorFilter();
+                em_cpass.getBackground().clearColorFilter();
+            }
+        });
+
+        em_cpass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                em_message.setVisibility(delView.GONE);
+                em_pass.getBackground().clearColorFilter();
+                em_cpass.getBackground().clearColorFilter();
+            }
+        });
+
+        em_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                em_message.setVisibility(delView.GONE);
+                em_text.getBackground().clearColorFilter();
+
             }
         });
 
@@ -338,8 +498,8 @@ public class SettingsActivity extends AppCompatActivity {
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this,android.R.style.Theme_Material_Light_Dialog_Alert);
 
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure,you want to delete your account?");
+        builder.setTitle("Delete Account");
+        builder.setMessage("Are you sure you want to delete your account?");
 
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
