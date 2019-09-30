@@ -174,7 +174,7 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.one_answer_upvote_image){
-            
+
         }
         if(view.getId() == R.id.one_answer_downvote_image){
 
