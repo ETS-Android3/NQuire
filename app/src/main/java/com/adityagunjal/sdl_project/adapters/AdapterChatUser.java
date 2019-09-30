@@ -33,22 +33,30 @@ public class AdapterChatUser extends RecyclerView.Adapter<AdapterChatUser.MyView
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_chat, parent, false);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                context.startActivity(new Intent(context, ChatActivity.class));
-            }
-        });
+
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ModelChatUser modelChatUser = modelChatUserArrayList.get(position);
+        final ModelChatUser modelChatUser = modelChatUserArrayList.get(position);
 
         holder.username.setText(modelChatUser.getUsername());
-        holder.lastMessage.setText(modelChatUser.getLastMessage());
-        holder.lastUpdated.setText(modelChatUser.getLastUpdated());
+        if(modelChatUser.getLastMessage().length() > 26){
+            holder.lastMessage.setText(modelChatUser.getLastMessage().substring(0, 25).trim() + " ...");
+        }else{
+            holder.lastMessage.setText(modelChatUser.getLastMessage());
+        }
+        holder.lastUpdated.setText(modelChatUser.getLastUpdated().substring(3, 9).trim());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, ChatActivity.class);
+                i.putExtra("EXTRA_CHAT_USER", modelChatUser);
+                context.startActivity(i);
+            }
+        });
     }
 
     @Override
@@ -69,5 +77,10 @@ public class AdapterChatUser extends RecyclerView.Adapter<AdapterChatUser.MyView
             lastMessage = itemView.findViewById(R.id.chat_last_message);
             lastUpdated = itemView.findViewById(R.id.chat_last_updated);
         }
+    }
+
+    public void addNewUser(ModelChatUser modelChatUser){
+        modelChatUserArrayList.add(modelChatUser);
+        notifyDataSetChanged();
     }
 }

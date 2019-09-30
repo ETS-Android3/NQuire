@@ -28,7 +28,7 @@
                 android:layout_margin="9dp"
                 android:background="@drawable/circle"
                 android:padding="3dp"
-                android:src="@drawable/dp"/>
+                android:src="@drawable/ic_profile_pic"/>
 
             <ImageButton
                 android:visibility="gone"
@@ -92,6 +92,7 @@
             android:textSize="14sp" />
 
         <LinearLayout
+            android:id="@+id/edit_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"

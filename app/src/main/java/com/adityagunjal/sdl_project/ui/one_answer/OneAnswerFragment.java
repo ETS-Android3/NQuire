@@ -1,5 +1,6 @@
 package com.adityagunjal.sdl_project.ui.one_answer;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.adityagunjal.sdl_project.ProfileActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
@@ -70,6 +72,8 @@ public class OneAnswerFragment extends Fragment {
         upvoteImage = rootView.findViewById(R.id.one_answer_upvote_image);
         downvoteImage = rootView.findViewById(R.id.one_answer_downvote_image);
         profilePic = rootView.findViewById(R.id.one_answer_profile_pic);
+
+        userInfo.setOnClickListener(showProfile);
 
         setInfo();
 
@@ -131,5 +135,15 @@ public class OneAnswerFragment extends Fragment {
                     }
                 });
     }
+
+    View.OnClickListener showProfile = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent i = new Intent(getActivity(), ProfileActivity.class);
+            i.putExtra("EXTRA_USER", modelUser);
+            i.putExtra("EXTRA_USER_ID", modelAnswer.getUserID());
+            startActivity(i);
+        }
+    };
 
 }

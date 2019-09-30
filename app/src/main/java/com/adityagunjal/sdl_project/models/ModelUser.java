@@ -8,6 +8,7 @@ public class ModelUser implements Serializable {
     int questionCount, answerCount;
     public ArrayList<String> questionsArrayList;
     public ArrayList<String> answersArrayList;
+    public ArrayList<String> chatsList;
 
     public ModelUser(){}
 
@@ -97,6 +98,14 @@ public class ModelUser implements Serializable {
 
     public void setAnswersArrayList(ArrayList<String> answersArrayList) {
         this.answersArrayList = answersArrayList;
+    }
+
+    public ArrayList<String> getChatsList() {
+        return chatsList;
+    }
+
+    public void setChatsList(ArrayList<String> chatsList) {
+        this.chatsList = chatsList;
     }
 
     public ModelUser(String firstName, String lastName, String username, String email, String registrationID){
