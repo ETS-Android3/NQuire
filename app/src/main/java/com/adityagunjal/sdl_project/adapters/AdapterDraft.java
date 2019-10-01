@@ -5,13 +5,16 @@ import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adityagunjal.sdl_project.AnswerQuestionActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.ShowAnswerActivity;
 import com.adityagunjal.sdl_project.models.ModelDraft;
@@ -23,18 +26,22 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder>{
 
     String qText = "a";
+
     ModelUser user;
+    String draftId ;
     Context context;
     ArrayList<ModelDraft> modelDraftArrayList;
 
@@ -57,11 +64,14 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
         final ModelDraft modelDraft = modelDraftArrayList.get(position);
-        String uID  = modelDraft.getUserID();
-        String qID = modelDraft.getQuestionID();
+       final String uID  = modelDraft.getUserID();
+       final String qID = modelDraft.getQuestionID();
+       final String dID = modelDraft.getDraftID();
+       final HashMap<String,String> draft = modelDraft.getDraft();
 
-
+        draftId = modelDraft.getDraftID();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions").child(qID).child("text");
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -79,17 +89,57 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
 
 
         holder.question.setText(qText);
-
-
-
-
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.editDraft.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                Intent i = new Intent(context, AnswerQuestionActivity.class);
+                i.putExtra("EXTRA_FLAG",1);
+                i.putExtra("EXTRA_DRAFT_ID", dID);
+                i.putExtra("EXTRA_QUESTION_ID", qID);
+                i.putExtra("EXTRA_USER_ID",uID);
+                i.putExtra("EXTRA_DRAFT_ANSWER",draft);
+
+                Toast.makeText(context, "Button Clicked", Toast.LENGTH_SHORT).show();
+                context.startActivity(i);
 
             }
+
         });
+
+        holder.deleteDraft.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Query query = FirebaseDatabase.getInstance().getReference("Drafts/"+draftId);
+                Toast.makeText(context, "d "+modelDraft.getDraftID(), Toast.LENGTH_SHORT).show();
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            ModelDraft modelDraft = ds.getValue(ModelDraft.class);
+
+
+                            FirebaseDatabase.getInstance().getReference("Drafts").child(dID).removeValue();
+                            deleteItem(modelDraft);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+
+
+                });
+            }
+        });
+
+
+
+
+
 
 
     }
@@ -104,6 +154,7 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
         final Context itemViewContext;
 
         TextView question;
+        ImageButton editDraft,deleteDraft;
         public MyViewHolder(View itemView) {
             super(itemView);
 
@@ -111,7 +162,8 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
 
 
             question = (TextView) itemView.findViewById(R.id.draft_card_question);
-
+            editDraft = itemView.findViewById(R.id.edit_draft_button);
+            deleteDraft = itemView.findViewById(R.id.del_draft_button);
 
         }
     }

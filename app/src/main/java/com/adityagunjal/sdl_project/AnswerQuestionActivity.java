@@ -51,8 +51,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -64,11 +66,12 @@ public class AnswerQuestionActivity extends AppCompatActivity {
     EditText editText;
 
 
-    HashMap<String, String> answer = new HashMap<>();
-    HashMap<String,String> draft = new HashMap<>();
+    HashMap<String, String> answer = new LinkedHashMap<>();
+    HashMap<String,String> draft = new LinkedHashMap<>();
 
     int currentIndex = -1;
     int totalViews = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,24 +80,34 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         answerLinearLayout = findViewById(R.id.answer_linear_layout);
         TextView questionTextView = findViewById(R.id.question_text);
         Intent i = getIntent();
-       String flag = i.getStringExtra("EXTRA_FLAG");
-       if(flag == "d")
+       int flag = i.getIntExtra("EXTRA_FLAG",0);
+
+
+        editText = findViewById(R.id.edit_text1);
+        editText.setId(0);
+        currentIndex = 0;
+        totalViews = 1;
+
+        if(flag == 1)
        {
+
           draftId =  i.getStringExtra("EXTRA_DRAFT_ID");
           questionID = i.getStringExtra("EXTRA_QUESTION_ID");
           userID = i.getStringExtra("EXTRA_USER_ID");
-          draft = (HashMap<String, String>) i.getSerializableExtra("EXTRA_DRAFT_ANSWER");
-
+          draft = (LinkedHashMap<String, String>) i.getSerializableExtra("EXTRA_DRAFT_ANSWER");
+           answerLinearLayout.removeView(editText);
            Iterator draftIterator = draft.entrySet().iterator();
            while(draftIterator.hasNext()){
-               Map.Entry<String, String> answerElement = (Map.Entry) draftIterator.next();
-               String key = answerElement.getKey();
+               Map.Entry<String, String> draftElement = (Map.Entry) draftIterator.next();
+               String key = draftElement.getKey();
 
                if(key.charAt(0) == 't'){
                    EditText editText = new EditText(answerLinearLayout.getContext());
-                   editText.setText(answerElement.getValue());
+                   editText.setText(draftElement.getValue());
+
                    editText.setTextColor(getResources().getColor(R.color.black));
                    editText.setTextSize(17);
+                   editText.setBackground(null);
                    answerLinearLayout.addView(editText);
                }else{
                    final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -104,7 +117,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
                    imageView.setLayoutParams(layoutParams);
                    answerLinearLayout.addView(imageView);
 
-                   FirebaseStorage.getInstance().getReference(answerElement.getValue())
+                   FirebaseStorage.getInstance().getReference(draftElement.getValue())
                            .getBytes(1024 * 1024)
                            .addOnCompleteListener(new OnCompleteListener<byte[]>() {
                                @Override
@@ -116,6 +129,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
                            });
                }
            }
+           currentIndex = draft.size();
        }
        else {
            questionID = i.getStringExtra("EXTRA_QUESTION_ID");
@@ -130,10 +144,6 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
 
 
-        editText = findViewById(R.id.edit_text1);
-        editText.setId(0);
-        currentIndex = 0;
-        totalViews = 1;
     }
 
     public void onBackPressed(View view) {

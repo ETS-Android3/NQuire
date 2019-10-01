@@ -2,10 +2,11 @@ package com.adityagunjal.sdl_project.models;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class ModelDraft implements Serializable {
     public String userID, questionID,draftID;
-    public HashMap<String, String>draft;
+    public HashMap<String, String> draft;
 
     public ModelDraft(){}
 

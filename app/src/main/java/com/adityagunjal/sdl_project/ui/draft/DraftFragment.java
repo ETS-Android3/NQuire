@@ -44,6 +44,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -59,7 +60,7 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
     ModelDraft modelDraft;
 
     String dID,qID,uID;
-    HashMap<String,String> draft =  new HashMap<>();
+    HashMap<String,String> draft =  new LinkedHashMap<>();
 
 
 
@@ -94,8 +95,7 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
        View ans = inflater.inflate(R.layout.activity_answer_question, container,false);
         answerLinearLayout = ans.findViewById(R.id.answer_linear_layout);
         View draft_card = inflater.inflate(R.layout.draft_card, container, false);
-        editDraft = draft_card.findViewById(R.id.edit_draft_button);
-       editDraft.setOnClickListener(this);
+
         deleteDraft = draft_card.findViewById(R.id.del_draft_button);
         deleteDraft.setOnClickListener(this);
 
@@ -173,47 +173,10 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
                 break;
 
 
-            case R.id.edit_draft_button:
 
 
-                System.out.println("In case edit draft");
-
-                Intent i = new Intent(getActivity(), AnswerQuestionActivity.class);
-                i.putExtra("EXTRA_FLAG","d");
-                i.putExtra("EXTRA_DRAFT_ID", dID);
-                i.putExtra("EXTRA_QUESTION_ID", qID);
-                i.putExtra("EXTRA_USER_ID",uID);
-                i.putExtra("EXTRA_DRAFT_ANSWER",draft);
-
-                Toast.makeText(getActivity(), "Button Clicked", Toast.LENGTH_SHORT).show();
-                getActivity().startActivity(i);
-                break;
-
-            case R.id.del_draft_button:
-                Query query = FirebaseDatabase.getInstance().getReference("Drafts");
-
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            ModelDraft modelDraft = ds.getValue(ModelDraft.class);
-                            String draftId = modelDraft.draftID;
-                            FirebaseDatabase.getInstance().getReference("Drafts").child(draftId).removeValue();
-                            adapterDraft.deleteItem(modelDraft);
-
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
 
 
-                });
-
-                break;
 
         }
 

@@ -130,7 +130,7 @@ public class AllAnswersFragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         if(view.getId() == R.id.answer_question_symbol || view.getId() == R.id.answer_question_text){
             Intent i = new Intent(getActivity(), AnswerQuestionActivity.class);
-            i.putExtra("EXTRA_FLAG","a");
+            i.putExtra("EXTRA_FLAG",0);
             i.putExtra("EXTRA_QUESTION_ID", modelQuestion.getqID());
             i.putExtra("EXTRA_QUESTION_TEXT", modelQuestion.getText());
             i.putExtra("EXTRA_USER_ID", modelQuestion.getUserID());
