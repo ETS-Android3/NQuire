@@ -25,8 +25,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -67,14 +69,29 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
         float factor = holder.answer.getContext().getResources().getDisplayMetrics().density;
 
         HashMap<String, String> answerMap = modelAnswer.getAnswer();
-        Iterator answerIterator = answerMap.entrySet().iterator();
+
+        LinkedHashMap<Integer, String> sortedAnswerMap = new LinkedHashMap<>();
+
+        ArrayList<Integer> sortedKeys = new ArrayList<>();
+
+        for(String key : answerMap.keySet()){
+            sortedKeys.add(Integer.parseInt(key.substring(1)));
+        }
+
+        Collections.sort(sortedKeys);
+
+        for(int i : sortedKeys){
+            sortedAnswerMap.put(i, answerMap.get("k" + Integer.toString(i)));
+        }
+
+        Iterator answerIterator = sortedAnswerMap.entrySet().iterator();
 
         String answerText = "";
         int flag0 = 0, flag1 = 0;
         while(answerIterator.hasNext()){
-            Map.Entry<String, String> answerElement = (Map.Entry) answerIterator.next();
-            String key = answerElement.getKey();
-            if(key.charAt(0) == 't'){
+            Map.Entry<Integer, String> answerElement = (Map.Entry) answerIterator.next();
+            int key = answerElement.getKey();
+            if(key % 2 == 0){
                 String text = answerElement.getValue();
                 for(int i = 0; i < text.length() && answerText.length() < 100; i++){
                     answerText += text.charAt(i);
@@ -187,5 +204,11 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
         modelAnswerArrayList.add(modelAnswer);
         notifyDataSetChanged();
     }
+
+    public void clearList(){
+        modelAnswerArrayList.clear();
+        notifyDataSetChanged();
+    }
+
 
 }

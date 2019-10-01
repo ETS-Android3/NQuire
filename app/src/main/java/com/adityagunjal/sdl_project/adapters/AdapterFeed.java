@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +28,10 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -72,14 +75,29 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
         holder.comments.setText(Integer.toString(modelAnswer.getComments()));
 
         HashMap<String, String> answerMap = modelAnswer.getAnswer();
-        Iterator answerIterator = answerMap.entrySet().iterator();
+
+        LinkedHashMap<Integer, String> sortedAnswerMap = new LinkedHashMap<>();
+
+        ArrayList<Integer> sortedKeys = new ArrayList<>();
+
+        for(String key : answerMap.keySet()){
+            sortedKeys.add(Integer.parseInt(key.substring(1)));
+        }
+
+        Collections.sort(sortedKeys);
+
+        for(int i : sortedKeys){
+            sortedAnswerMap.put(i, answerMap.get("k" + Integer.toString(i)));
+        }
+
+        Iterator answerIterator = sortedAnswerMap.entrySet().iterator();
 
         String answerText = "";
         int flag0 = 0, flag1 = 0;
         while(answerIterator.hasNext()){
-            Map.Entry<String, String> answerElement = (Map.Entry) answerIterator.next();
-            String key = answerElement.getKey();
-            if(key.charAt(0) == 't'){
+            Map.Entry<Integer, String> answerElement = (Map.Entry) answerIterator.next();
+            int key = answerElement.getKey();
+            if(key % 2 == 0){
                 String text = answerElement.getValue();
                 for(int i = 0; i < text.length() && answerText.length() < 100; i++){
                     answerText += text.charAt(i);

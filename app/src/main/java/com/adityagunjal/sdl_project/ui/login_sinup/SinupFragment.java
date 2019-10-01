@@ -1,5 +1,8 @@
 package com.adityagunjal.sdl_project.ui.login_sinup;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.util.Log;
@@ -16,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.adityagunjal.sdl_project.R;
+import com.adityagunjal.sdl_project.SplashActivity;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.adityagunjal.sdl_project.models.ModelUsernameEmail;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,11 +31,12 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Pattern;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class SinupFragment extends Fragment implements Button.OnClickListener{
     FirebaseAuth firebaseAuth;
 
     TextInputEditText firstName, lastName, username, email, registrationID, password, confirmPassword;
-    ProgressBar progressBar;
 
     @Nullable
     @Override
@@ -47,8 +52,6 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
         registrationID = view.findViewById(R.id.signup_registration_id);
         password = view.findViewById(R.id.signup_password);
         confirmPassword = view.findViewById(R.id.signup_confirm_password);
-
-        progressBar = view.findViewById(R.id.signup_progress_bar);
 
         signupButton.setOnClickListener(this);
 
@@ -112,7 +115,12 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
             return;
         }
 
-        progressBar.setVisibility(View.VISIBLE);
+
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Signing Up ...");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+
         firebaseAuth.createUserWithEmailAndPassword(eMail, pword)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -133,18 +141,33 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
-                                                                if(task.isSuccessful())
-                                                                    Toast.makeText(getActivity(), "User Registered Successfully", Toast.LENGTH_LONG).show();
-                                                                progressBar.setVisibility(View.GONE);
+                                                                if(task.isSuccessful()){
+
+                                                                    SharedPreferences preferences = getActivity().getApplicationContext().getSharedPreferences("user_login", MODE_PRIVATE);
+                                                                    SharedPreferences.Editor editor = preferences.edit();
+                                                                    editor.putString("username", uname);
+                                                                    editor.putString("email" ,eMail);
+                                                                    editor.putString("password", pword);
+                                                                    editor.apply();
+                                                                    editor.commit();
+
+                                                                    Intent i = new Intent(getActivity(), SplashActivity.class);
+                                                                    startActivity(i);
+                                                                    getActivity().finish();
+                                                                    progressDialog.dismiss();
+                                                                }
                                                             }
                                                         });
+                                            }else{
+                                                Toast.makeText(getActivity(), "Something went wrong ! Check your Internet Connection", Toast.LENGTH_SHORT).show();
+                                                progressDialog.dismiss();
                                             }
                                         }
                                     });
 
                         }else{
-                            Log.i("Registration", task.getException().toString());
-                            Toast.makeText(getActivity(), "Registration Failed", Toast.LENGTH_LONG).show();
+                            progressDialog.dismiss();
+                            Toast.makeText(getActivity(), "Registration Failed ! Check your Internet Connection", Toast.LENGTH_LONG).show();
                         }
                     }
                 });

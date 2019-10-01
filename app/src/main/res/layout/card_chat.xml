@@ -43,8 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:textSize="15sp"
-                    android:text="Message"/>
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
@@ -61,7 +60,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:text="1 hour ago"
                     android:textSize="13sp" />
 
             </LinearLayout>

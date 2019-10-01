@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adityagunjal.sdl_project.helpers.Helpers;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelDraft;
 import com.adityagunjal.sdl_project.models.ModelUser;
@@ -124,11 +125,6 @@ public class AnswerQuestionActivity extends AppCompatActivity {
            username = i.getStringExtra("EXTRA_USERNAME");
            questionTextView.setText(questionText);
        }
-
-
-
-
-
 
         editText = findViewById(R.id.edit_text1);
         editText.setId(0);
@@ -249,18 +245,20 @@ public class AnswerQuestionActivity extends AppCompatActivity {
     public void onPostButtonClicked(View view){
 
 
+        int currentCount = -1;
         for(int i = 0; i < answerLinearLayout.getChildCount(); i++){
             View currentView = answerLinearLayout.getChildAt(i);
 
             if(currentView instanceof EditText){
-
                 String text = ((EditText) currentView).getText().toString();
-                answer.put("t" + i, text);
+                currentCount = Helpers.nextEven(currentCount);
+                answer.put("k" + Integer.toString(currentCount), text);
 
             }else if(currentView instanceof ImageView){
 
                 String tag = (String) currentView.getTag();
-                answer.put("i" + i, tag);
+                currentCount = Helpers.nextOdd(currentCount);
+                answer.put("k" + Integer.toString(currentCount), tag);
 
             }
         }

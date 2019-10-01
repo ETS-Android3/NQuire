@@ -42,12 +42,17 @@ public class AdapterChatUser extends RecyclerView.Adapter<AdapterChatUser.MyView
         final ModelChatUser modelChatUser = modelChatUserArrayList.get(position);
 
         holder.username.setText(modelChatUser.getUsername());
-        if(modelChatUser.getLastMessage().length() > 26){
-            holder.lastMessage.setText(modelChatUser.getLastMessage().substring(0, 25).trim() + " ...");
-        }else{
-            holder.lastMessage.setText(modelChatUser.getLastMessage());
+
+        try{
+            if(modelChatUser.getLastMessage().length() > 26){
+                holder.lastMessage.setText(modelChatUser.getLastMessage().substring(0, 25).trim() + " ...");
+            }else{
+                holder.lastMessage.setText(modelChatUser.getLastMessage());
+            }
+            holder.lastUpdated.setText(modelChatUser.getLastUpdated().substring(3, 10).trim());
+        }catch (NullPointerException e){
+
         }
-        holder.lastUpdated.setText(modelChatUser.getLastUpdated().substring(3, 9).trim());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

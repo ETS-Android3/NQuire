@@ -136,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case R.id.drawable_nav_logout:
                             firebaseAuth.signOut();
-                            //SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                            //preferences.edit().clear().commit();
+                            SharedPreferences preferences = getApplicationContext().getSharedPreferences("user_login", MODE_PRIVATE);
+                            preferences.edit().clear().commit();
 
                             SplashActivity.isAlreadyStarted = false;
                             SplashActivity.databaseReference.removeEventListener(SplashActivity.valueEventListener);
@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.top_notifications_icon:
                 Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show();
+             //   onNotifsClicked();
                 break;
         }
 
