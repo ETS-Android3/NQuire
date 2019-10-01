@@ -141,4 +141,10 @@ public class AllAnswersFragment extends Fragment implements View.OnClickListener
             getActivity().finish();
         }
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        adapterAnswer.clearList();
+    }
 }

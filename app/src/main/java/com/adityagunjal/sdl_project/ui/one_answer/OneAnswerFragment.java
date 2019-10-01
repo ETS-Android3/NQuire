@@ -34,6 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -107,13 +109,28 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
         float factor =  getContext().getResources().getDisplayMetrics().density;
 
         HashMap<String, String> answerMap = modelAnswer.getAnswer();
-        Iterator answerIterator = answerMap.entrySet().iterator();
+
+        LinkedHashMap<Integer, String> sortedAnswerMap = new LinkedHashMap<>();
+
+        ArrayList<Integer> sortedKeys = new ArrayList<>();
+
+        for(String key : answerMap.keySet()){
+            sortedKeys.add(Integer.parseInt(key.substring(1)));
+        }
+
+        Collections.sort(sortedKeys);
+
+        for(int i : sortedKeys){
+            sortedAnswerMap.put(i, answerMap.get("k" + Integer.toString(i)));
+        }
+
+        Iterator answerIterator = sortedAnswerMap.entrySet().iterator();
 
         while(answerIterator.hasNext()){
-            Map.Entry<String, String> answerElement = (Map.Entry) answerIterator.next();
-            String key = answerElement.getKey();
+            Map.Entry<Integer, String> answerElement = (Map.Entry) answerIterator.next();
+            int key = answerElement.getKey();
 
-            if(key.charAt(0) == 't'){
+            if(key % 2 == 0){
                 TextView textView = new TextView(answerLinearLayout.getContext());
                 textView.setText(answerElement.getValue());
                 textView.setTextColor(getResources().getColor(R.color.black));
@@ -170,12 +187,16 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             ModelAnswer currentAnswer = dataSnapshot.getValue(ModelAnswer.class);
-            currentAnswer.setAnswerID(dataSnapshot.getKey());
-            modelAnswer = currentAnswer;
+            try{
+                currentAnswer.setAnswerID(dataSnapshot.getKey());
+                modelAnswer = currentAnswer;
 
-            upvoteCount.setText(Integer.toString(currentAnswer.getUpvotes()));
-            downvoteCount.setText(Integer.toString(currentAnswer.getDownvotes()));
-            commentCount.setText(Integer.toString(currentAnswer.getComments()) + " comments");
+                upvoteCount.setText(Integer.toString(currentAnswer.getUpvotes()));
+                downvoteCount.setText(Integer.toString(currentAnswer.getDownvotes()));
+                commentCount.setText(Integer.toString(currentAnswer.getComments()) + " comments");
+            }catch (NullPointerException e){
+
+            }
         }
 
         @Override
@@ -187,38 +208,10 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.one_answer_upvote_image){
-            if(isAnswerUpvoted && !isAnswerDownvoted){
-                isAnswerUpvoted = false;
-                upvoteCount.setText(Integer.toString(modelAnswer.getUpvotes() - 1));
-                upvoteImage.setImageResource(R.drawable.ic_upvote_icon);
 
-                FirebaseDatabase.getInstance().getReference("Answers/" + modelAnswer.getAnswerID() + "/upvotes")
-                        .setValue(modelAnswer.getUpvotes() - 1);
-            }else if(!isAnswerDownvoted){
-                isAnswerUpvoted = true;
-                upvoteCount.setText(Integer.toString(modelAnswer.getUpvotes() + 1));
-                upvoteImage.setImageResource(R.drawable.ic_upvote_active);
-                FirebaseDatabase.getInstance().getReference("Answers/" + modelAnswer.getAnswerID() + "/upvotes")
-                        .setValue(modelAnswer.getUpvotes() + 1);
-            }
         }
         if(view.getId() == R.id.one_answer_downvote_image){
-            if(isAnswerDownvoted && !isAnswerUpvoted){
-                isAnswerDownvoted = false;
-                downvoteCount.setText(Integer.toString(modelAnswer.getDownvotes() - 1));
-                downvoteImage.setImageResource(R.drawable.ic_downvote_icon);
 
-                FirebaseDatabase.getInstance().getReference("Answers/" + modelAnswer.getAnswerID() + "/downvotes")
-                        .setValue(modelAnswer.getDownvotes() - 1);
-
-            }else if(!isAnswerUpvoted){
-                isAnswerDownvoted = true;
-                downvoteCount.setText(Integer.toString(modelAnswer.getDownvotes() + 1));
-                downvoteImage.setImageResource(R.drawable.ic_downvote_active);
-
-                FirebaseDatabase.getInstance().getReference("Answers/" + modelAnswer.getAnswerID() + "/downvotes")
-                        .setValue(modelAnswer.getDownvotes() + 1);
-            }
         }
     }
 

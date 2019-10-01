@@ -26,6 +26,7 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -69,7 +70,22 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
         float factor = holder.answer.getContext().getResources().getDisplayMetrics().density;
 
         HashMap<String, String> answerMap = modelAnswer.getAnswer();
-        Iterator answerIterator = answerMap.entrySet().iterator();
+
+        LinkedHashMap<Integer, String> sortedAnswerMap = new LinkedHashMap<>();
+
+        ArrayList<Integer> sortedKeys = new ArrayList<>();
+
+        for(String key : answerMap.keySet()){
+            sortedKeys.add(Integer.parseInt(key.substring(1)));
+        }
+
+        Collections.sort(sortedKeys);
+
+        for(int i : sortedKeys){
+            sortedAnswerMap.put(i, answerMap.get("k" + Integer.toString(i)));
+        }
+
+        Iterator answerIterator = sortedAnswerMap.entrySet().iterator();
 
         String answerText = "";
         int flag0 = 0, flag1 = 0;
@@ -189,5 +205,11 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
         modelAnswerArrayList.add(modelAnswer);
         notifyDataSetChanged();
     }
+
+    public void clearList(){
+        modelAnswerArrayList.clear();
+        notifyDataSetChanged();
+    }
+
 
 }

@@ -138,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
                             firebaseAuth.signOut();
                             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                             preferences.edit().clear().commit();
+                            SharedPreferences preferences = getApplicationContext().getSharedPreferences("user_login", MODE_PRIVATE);
+                            preferences.edit().clear().commit();
 
                             SplashActivity.isAlreadyStarted = false;
                             SplashActivity.databaseReference.removeEventListener(SplashActivity.valueEventListener);

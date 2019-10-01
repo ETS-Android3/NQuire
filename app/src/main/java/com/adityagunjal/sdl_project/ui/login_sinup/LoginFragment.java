@@ -1,5 +1,6 @@
 package com.adityagunjal.sdl_project.ui.login_sinup;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -51,7 +52,6 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
         usename = view.findViewById(R.id.login_username);
         password = view.findViewById(R.id.login_password);
         login = view.findViewById(R.id.login_button);
-        progressBar = view.findViewById(R.id.login_progress_bar);
 
         login.setOnClickListener(this);
 
@@ -61,7 +61,6 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
     @Override
     public void onStop() {
         super.onStop();
-        progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -74,10 +73,19 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
         final String pword = password.getText().toString().trim();
 
         if(uname.isEmpty() || pword.isEmpty()){
-            Toast.makeText(getActivity(), "Invalid Login Credentials !", Toast.LENGTH_LONG).show();
+            if(uname.isEmpty()){
+                usename.setError("Username Should not be Empty !");
+            }else{
+                password.setError("Password Should not be Empty !");
+            }
             return;
         }else{
-            progressBar.setVisibility(View.VISIBLE);
+
+            final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("Logging in  ...");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+
             firebaseDatabase = FirebaseDatabase.getInstance();
             FirebaseDatabase.getInstance().getReference("Usernames")
                     .child(uname)
@@ -92,35 +100,36 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
                                             public void onComplete(@NonNull Task<AuthResult> task) {
                                                 if(task.isSuccessful()){
 
-                                                    /*SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                                                    SharedPreferences preferences = getActivity().getApplicationContext().getSharedPreferences("user_login", Context.MODE_PRIVATE);
                                                     SharedPreferences.Editor editor = preferences.edit();
                                                     editor.putString("username", uname);
                                                     editor.putString("email" ,email);
                                                     editor.putString("password", pword);
                                                     editor.apply();
-                                                    editor.commit();*/
+                                                    editor.commit();
 
                                                     Intent i = new Intent(getActivity(), SplashActivity.class);
                                                     startActivity(i);
                                                     getActivity().finish();
+
+                                                    progressDialog.dismiss();
                                                 }else{
-                                                    Log.i("Login","Invalid Password");
-                                                    Toast.makeText(getActivity(), "Wrong Password", Toast.LENGTH_SHORT).show();
+                                                    password.setError("Invalid Password !");
                                                     progressBar.setVisibility(View.GONE);
+                                                    progressDialog.dismiss();
                                                 }
                                             }
                                         });
                             }
                             catch (Exception e){
-                                Log.i("Login","Invalid Username");
-                                Toast.makeText(getActivity(), "Invalid Username", Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
+                                usename.setError("Invalid Username !");
+                                progressDialog.dismiss();
                             }
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-                            progressBar.setVisibility(View.GONE);
+                            progressDialog.dismiss();
                         }
                     });
         }

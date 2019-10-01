@@ -24,6 +24,8 @@ public class ShowAnswerActivity extends AppCompatActivity {
     Fragment currentFragment;
     boolean showComments = false;
 
+    Fragment currentAnswer;
+
     ModelQuestion modelQuestion;
 
     @Override
@@ -42,6 +44,8 @@ public class ShowAnswerActivity extends AppCompatActivity {
         bundle.putSerializable("ModelQuestion", i.getSerializableExtra("EXTRA_QUESTION"));
 
         currentFragment.setArguments(bundle);
+
+        currentAnswer = currentFragment;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, currentFragment).commit();
 
@@ -70,7 +74,7 @@ public class ShowAnswerActivity extends AppCompatActivity {
 
         currentFragment = new OneAnswerFragment();
         currentFragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, currentFragment).addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, currentFragment).commit();
     }
 
 
@@ -78,14 +82,15 @@ public class ShowAnswerActivity extends AppCompatActivity {
 
         Fragment allAnswersFragment = new AllAnswersFragment(this);
 
-        //Toast.makeText(this, "onViewMoreAnswers Clicked !", Toast.LENGTH_SHORT).show();
-
         Bundle bundle = new Bundle();
         bundle.putSerializable("ModelQuestion", modelQuestion);
 
         allAnswersFragment.setArguments(bundle);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, allAnswersFragment).addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().remove(currentAnswer);
+        currentAnswer = currentFragment;
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, allAnswersFragment).commit();
     }
 
     @Override
