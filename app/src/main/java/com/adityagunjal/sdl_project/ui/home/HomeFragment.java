@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adityagunjal.sdl_project.R;
+import com.adityagunjal.sdl_project.SplashActivity;
 import com.adityagunjal.sdl_project.adapters.AdapterFeed;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelFeed;
@@ -46,6 +47,7 @@ public class HomeFragment extends Fragment {
 
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
+    boolean self = true;
 
     @Nullable
     @Override
@@ -69,6 +71,8 @@ public class HomeFragment extends Fragment {
 
     public void populateRecyclerView() {
 
+        self = true;
+
         Query query = FirebaseDatabase.getInstance().getReference("Answers").orderByChild("timestamp").limitToFirst(pageLimit);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -85,37 +89,39 @@ public class HomeFragment extends Fragment {
 
                         final String questionID = modelAnswer.getQuestionID();
 
-                        FirebaseDatabase.getInstance().getReference("Users")
-                                .child(modelAnswer.getUserID())
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        final ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
-                                        FirebaseDatabase.getInstance().getReference("questions")
-                                                .child(questionID)
-                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        ModelQuestion modelQuestion = dataSnapshot.getValue(ModelQuestion.class);
-                                                        modelQuestion.setqID(questionID);
+                        if(!modelAnswer.getUserID().equals(SplashActivity.userInfo.getUserID())){
+                            FirebaseDatabase.getInstance().getReference("Users")
+                                    .child(modelAnswer.getUserID())
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            final ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
+                                            FirebaseDatabase.getInstance().getReference("questions")
+                                                    .child(questionID)
+                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            ModelQuestion modelQuestion = dataSnapshot.getValue(ModelQuestion.class);
+                                                            modelQuestion.setqID(questionID);
 
-                                                        ModelFeed modelFeed = new ModelFeed(modelQuestion, modelUser, modelAnswer);
+                                                            ModelFeed modelFeed = new ModelFeed(modelQuestion, modelUser, modelAnswer);
 
-                                                        adapterFeed.addNewItem(modelFeed);
-                                                        offset = (long) modelAnswer.getTimestamp();
-                                                    }
+                                                            adapterFeed.addNewItem(modelFeed);
+                                                            offset = (long) modelAnswer.getTimestamp();
+                                                        }
 
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                    }
-                                                });
-                                    }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                        }
+                                                    });
+                                        }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                    }
-                                });
+                                        }
+                                    });
+                        }
                     }
                 }
             }

@@ -114,7 +114,11 @@ public class ChatActivity extends AppCompatActivity {
                         messageText.setText("");
                         messageText.clearFocus();
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                        try {
+                            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                        }catch (NullPointerException e){
+                            
+                        }
                     }
 
                     @Override

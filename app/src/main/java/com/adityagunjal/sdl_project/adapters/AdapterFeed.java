@@ -72,7 +72,7 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
         holder.lastUpdated.setText(modelAnswer.getDate());
         holder.likes.setText(Integer.toString(modelAnswer.getUpvotes()));
         holder.dislikes.setText(Integer.toString(modelAnswer.getDownvotes()));
-        holder.comments.setText(Integer.toString(modelAnswer.getComments()));
+        holder.comments.setText(Integer.toString(modelAnswer.getComments()) + " comments");
 
         HashMap<String, String> answerMap = modelAnswer.getAnswer();
 

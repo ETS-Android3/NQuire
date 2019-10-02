@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,10 +32,12 @@ import androidx.fragment.app.Fragment;
 import com.adityagunjal.sdl_project.ChatActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.SplashActivity;
+import com.adityagunjal.sdl_project.helpers.Helpers;
 import com.adityagunjal.sdl_project.interfaces.CustomeOnBackPressed;
 import com.adityagunjal.sdl_project.interfaces.DataChanged;
 import com.adityagunjal.sdl_project.models.ModelChat;
 import com.adityagunjal.sdl_project.models.ModelUser;
+import com.bumptech.glide.load.model.Headers;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -124,17 +127,17 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
 
-        if(user != null){
+        if(user == null || uid.equals(SplashActivity.userInfo.getUserID())){
+            editLayout.setVisibility(View.VISIBLE);
+            isEditEnabled = true;
+            editProfile.setVisibility(View.VISIBLE);
+            getUserInfo();
+        }else{
             isEditEnabled = false;
             editLayout.setVisibility(View.GONE);
             chatButton.setVisibility(View.VISIBLE);
             setUserInfo(user, uid, null);
             chatButton.setOnClickListener(onSendMessageClicked);
-        }else{
-            editLayout.setVisibility(View.VISIBLE);
-            isEditEnabled = true;
-            editProfile.setVisibility(View.VISIBLE);
-            getUserInfo();
         }
 
         return rootView;
@@ -347,25 +350,100 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
         @Override
         public void onClick(View view) {
 
-            //ArrayList<String> userChats = SplashActivity.userInfo.getModelUser().getChatsArrayList();
+            String temp;
+            if(Helpers.stringCompare(userID, SplashActivity.userInfo.getUserID()) > 0){
+                temp = SplashActivity.userInfo.getUserID() + "_" + userID;
+            }else{
+                temp = userID + "_" + SplashActivity.userInfo.getUserID();
+            }
 
-            DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chats").push();
+            final String chatID = temp;
 
-            final String chatID = chatRef.getKey();
-
-            FirebaseDatabase.getInstance().getReference("Users")
-                    .child(SplashActivity.userInfo.getUserID())
-                    .child("chatsList")
+            FirebaseDatabase.getInstance().getReference("Chats/" + chatID)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            ArrayList<String> chatsList = (ArrayList<String>) dataSnapshot.getValue();
-                            if(chatsList == null){
-                                chatsList = new ArrayList<>();
-                            }
-                            if(!chatsList.contains(chatID)){
-                                chatsList.add(chatID);
-                                dataSnapshot.getRef().setValue(chatsList);
+                            if(dataSnapshot.getValue(ModelChat.class) == null){
+                                FirebaseDatabase.getInstance().getReference("Users")
+                                        .child(SplashActivity.userInfo.getUserID())
+                                        .child("chatsList")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                ArrayList<String> chatsList = (ArrayList<String>) dataSnapshot.getValue();
+                                                if(chatsList == null){
+                                                    chatsList = new ArrayList<>();
+                                                }
+                                                if(!chatsList.contains(chatID)){
+                                                    chatsList.add(chatID);
+                                                    dataSnapshot.getRef().setValue(chatsList);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+                                FirebaseDatabase.getInstance().getReference("Users")
+                                        .child(userID)
+                                        .child("chatsList")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                ArrayList<String> chatsList = (ArrayList<String>) dataSnapshot.getValue();
+                                                if(chatsList == null){
+                                                    chatsList = new ArrayList<>();
+                                                }
+                                                if(!chatsList.contains(chatID)){
+                                                    chatsList.add(chatID);
+                                                    dataSnapshot.getRef().setValue(chatsList);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+                                ArrayList<String> participants = new ArrayList<>();
+                                participants.add(userID);
+                                participants.add(SplashActivity.userInfo.getUserID());
+
+                                final ModelChat chat = new ModelChat(chatID, participants);
+
+                                FirebaseDatabase.getInstance().getReference("Chats")
+                                        .child(chatID)
+                                        .setValue(chat)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()){
+
+                                                    Intent i = new Intent(getActivity(), ChatActivity.class);
+                                                    i.putExtra("EXTRA_FLAG", 1);
+                                                    i.putExtra("EXTRA_USER_ID", userID);
+                                                    i.putExtra("EXTRA_USER", modelUser);
+                                                    i.putExtra("EXTRA_CHAT", chat);
+                                                    startActivity(i);
+                                                    getActivity().finish();
+
+                                                }else{
+                                                    Toast.makeText(getActivity(), "Something went wrong !", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                            } else {
+                                ModelChat chat = dataSnapshot.getValue(ModelChat.class);
+                                Intent i = new Intent(getActivity(), ChatActivity.class);
+                                i.putExtra("EXTRA_FLAG", 1);
+                                i.putExtra("EXTRA_USER_ID", userID);
+                                i.putExtra("EXTRA_USER", modelUser);
+                                i.putExtra("EXTRA_CHAT", chat);
+                                startActivity(i);
+                                getActivity().finish();
                             }
                         }
 
@@ -374,56 +452,6 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
 
                         }
                     });
-
-            FirebaseDatabase.getInstance().getReference("Users")
-                    .child(userID)
-                    .child("chatsList")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            ArrayList<String> chatsList = (ArrayList<String>) dataSnapshot.getValue();
-                            if(chatsList == null){
-                                chatsList = new ArrayList<>();
-                            }
-                            if(!chatsList.contains(chatID)){
-                                chatsList.add(chatID);
-                                dataSnapshot.getRef().setValue(chatsList);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-            ArrayList<String> participants = new ArrayList<>();
-            participants.add(userID);
-            participants.add(SplashActivity.userInfo.getUserID());
-
-            ModelChat chat = new ModelChat(chatID, participants);
-
-            FirebaseDatabase.getInstance().getReference("Chats")
-                    .child(chatID)
-                    .setValue(chat)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-
-                            }else{
-                                Toast.makeText(getActivity(), "Something went wrong !", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-            Intent i = new Intent(getActivity(), ChatActivity.class);
-            i.putExtra("EXTRA_FLAG", 1);
-            i.putExtra("EXTRA_USER_ID", userID);
-            i.putExtra("EXTRA_USER", modelUser);
-            i.putExtra("EXTRA_CHAT", chat);
-            startActivity(i);
-            getActivity().finish();
         }
     };
 
