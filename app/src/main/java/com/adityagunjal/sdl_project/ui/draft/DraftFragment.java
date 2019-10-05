@@ -60,7 +60,7 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
     ModelDraft modelDraft;
 
     String dID,qID,uID;
-    HashMap<String,String> draft =  new LinkedHashMap<>();
+    HashMap<String,String> draft =  new HashMap<>();
 
 
 

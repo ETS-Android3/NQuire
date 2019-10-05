@@ -45,6 +45,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.snapshot.Index;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
@@ -52,7 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -65,58 +66,113 @@ public class AnswerQuestionActivity extends AppCompatActivity {
     ImageView imageView;
     LinearLayout answerLinearLayout;
     EditText editText;
+    String question;
 
 
-    HashMap<String, String> answer = new LinkedHashMap<>();
-    HashMap<String,String> draft = new LinkedHashMap<>();
-
+    HashMap<String, String> answer = new HashMap<>();
+    HashMap<String,String> draft = new HashMap<>();
+    LinkedHashMap<Integer, String> sortedDraftMap = new LinkedHashMap<>();
+    ArrayList<Integer> sortedKeys = new ArrayList<>();
     int currentIndex = -1;
     int totalViews = 0;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer_question);
         answerLinearLayout = findViewById(R.id.answer_linear_layout);
-        TextView questionTextView = findViewById(R.id.question_text);
-        Intent i = getIntent();
-       int flag = i.getIntExtra("EXTRA_FLAG",0);
-
-
+        final TextView questionTextView = findViewById(R.id.question_text);
         editText = findViewById(R.id.edit_text1);
         editText.setId(0);
         currentIndex = 0;
         totalViews = 1;
 
-        if(flag == 1)
+        Intent i = getIntent();
+       int flag = i.getIntExtra("EXTRA_FLAG",0);
+
+       if(flag == 1)
        {
 
           draftId =  i.getStringExtra("EXTRA_DRAFT_ID");
           questionID = i.getStringExtra("EXTRA_QUESTION_ID");
           userID = i.getStringExtra("EXTRA_USER_ID");
-          draft = (LinkedHashMap<String, String>) i.getSerializableExtra("EXTRA_DRAFT_ANSWER");
+          draft = (HashMap<String, String>) i.getSerializableExtra("EXTRA_DRAFT_ANSWER");
            answerLinearLayout.removeView(editText);
-           Iterator draftIterator = draft.entrySet().iterator();
-           while(draftIterator.hasNext()){
-               Map.Entry<String, String> draftElement = (Map.Entry) draftIterator.next();
-               String key = draftElement.getKey();
+           Toast.makeText(this, "dd"+draftId, Toast.LENGTH_SHORT).show();
+           FirebaseDatabase.getInstance().getReference("questions/"+questionID+"/text").addValueEventListener(new ValueEventListener() {
+               @Override
+               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                   question = dataSnapshot.getValue(String.class);
+                   questionTextView.setText(question);
 
-               if(key.charAt(0) == 't'){
+               }
+
+               @Override
+               public void onCancelled(@NonNull DatabaseError databaseError) {
+                   Toast.makeText(AnswerQuestionActivity.this, "Cannot Retrieve The Question", Toast.LENGTH_SHORT).show();
+
+               }
+           });
+
+
+
+          /* questionTextView.setTextColor(getResources().getColor(R.color.black));
+           questionTextView.setTextSize(17);*/
+           for(String key : draft.keySet()){
+               sortedKeys.add(Integer.parseInt(key.substring(1)));
+           }
+
+           Collections.sort(sortedKeys);
+
+           for(int i1 : sortedKeys){
+               sortedDraftMap.put(i1, draft.get("k" + Integer.toString(i1)));
+           }
+
+           float factor =  this.getResources().getDisplayMetrics().density;
+           Iterator draftIterator = sortedDraftMap.entrySet().iterator();
+           while(draftIterator.hasNext()){
+               Map.Entry<Integer, String> draftElement = (Map.Entry) draftIterator.next();
+               int key = draftElement.getKey();
+
+               if(key % 2 == 0){
                    EditText editText = new EditText(answerLinearLayout.getContext());
                    editText.setText(draftElement.getValue());
-
                    editText.setTextColor(getResources().getColor(R.color.black));
                    editText.setTextSize(17);
                    editText.setBackground(null);
                    answerLinearLayout.addView(editText);
+
                }else{
+
                    final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                   //layoutParams.topMargin = (int)(factor * 7);
-                   //layoutParams.bottomMargin = (int)(factor * 7);
+                   layoutParams.topMargin = (int)(factor * 7);
+                   layoutParams.bottomMargin = (int)(factor * 7);
                    final ImageView imageView = new ImageView(answerLinearLayout.getContext());
                    imageView.setLayoutParams(layoutParams);
                    answerLinearLayout.addView(imageView);
+                   imageView.setLongClickable(true);
+                   imageView.setOnLongClickListener(new View.OnLongClickListener() {
+                       @Override
+                       public boolean onLongClick(final View v) {
+                           Toast.makeText(AnswerQuestionActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+                           AlertDialog.Builder builder = new AlertDialog.Builder(AnswerQuestionActivity.this,android.R.style.Theme_Material_Light_Dialog_Alert);
+
+
+                           builder.setPositiveButton("Remove Image", new DialogInterface.OnClickListener() {
+                               @Override
+                               public void onClick(DialogInterface dialog, int which) {
+                                   StorageReference storageReference;
+                                   storageReference = FirebaseStorage.getInstance().getReference(v.getTag().toString());
+                                   storageReference.delete();
+                                   answerLinearLayout.removeView(imageView);
+                               }
+                           });
+                           AlertDialog rem = builder.create();
+                           rem.show();
+
+                           return true;
+                       }
+                   });
 
                    FirebaseStorage.getInstance().getReference(draftElement.getValue())
                            .getBytes(1024 * 1024)
@@ -130,6 +186,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
                            });
                }
            }
+           currentIndex = draft.size();
        }
        else {
            questionID = i.getStringExtra("EXTRA_QUESTION_ID");
@@ -144,10 +201,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
 
 
-        editText = findViewById(R.id.edit_text1);
-        editText.setId(0);
-        currentIndex = 0;
-        totalViews = 1;
+
     }
 
     public void onBackPressed(View view) {
@@ -184,9 +238,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
             selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
 
             byte[] byteData = byteArrayOutputStream.toByteArray();
-
             final Context context = getApplicationContext();
-
             final Bitmap finalBitmapImage = selectedImage;
 
             final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -442,18 +494,20 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
     void saveAsDraft()
     {
+        int currentCount = -1;
         for(int i = 0; i < answerLinearLayout.getChildCount(); i++){
             View currentView = answerLinearLayout.getChildAt(i);
 
             if(currentView instanceof EditText){
-
                 String text = ((EditText) currentView).getText().toString();
-                draft.put("t" + i, text);
+                currentCount = Helpers.nextEven(currentCount);
+                draft.put("k" + Integer.toString(currentCount), text);
 
             }else if(currentView instanceof ImageView){
 
                 String tag = (String) currentView.getTag();
-                draft.put("i" + i, tag);
+                currentCount = Helpers.nextOdd(currentCount);
+                draft.put("k" + Integer.toString(currentCount), tag);
 
             }
         }
@@ -461,7 +515,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Drafts");
         final String draftID = ref.push().getKey();
-        ModelDraft modelDraft = new ModelDraft(SplashActivity.userInfo.getUserID(), questionID, draft);
+        ModelDraft modelDraft = new ModelDraft(SplashActivity.userInfo.getUserID(), questionID,draftID, draft);
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Saving Draft");
         progressDialog.setCanceledOnTouchOutside(false);
@@ -565,6 +619,16 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    void showRemoveImageDialog()
+    {
+
+    }
+
+    void deleteImage(String storageUrl)
+    {
+
     }
 
 }

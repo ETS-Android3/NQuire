@@ -10,19 +10,21 @@ public class ModelDraft implements Serializable {
 
     public ModelDraft(){}
 
+
+
+    public ModelDraft(String userID, String questionID, String draftID, HashMap<String, String> draft) {
+       this.userID = userID;
+       this.questionID = questionID;
+       this.draftID = draftID;
+       this.draft = draft;
+    }
+
     public String getDraftID() {
         return draftID;
     }
 
     public void setDraftID(String draftID) {
         this.draftID = draftID;
-    }
-
-    public ModelDraft(String userID, String questionID, HashMap<String, String> draft) {
-       this.userID = userID;
-       this.questionID = questionID;
-       this.draftID = draftID;
-       this.draft = draft;
     }
 
     public String getUserID() {
@@ -48,4 +50,5 @@ public class ModelDraft implements Serializable {
     public void setDraft(HashMap<String, String> draft) {
         this.draft = draft;
     }
+
 }

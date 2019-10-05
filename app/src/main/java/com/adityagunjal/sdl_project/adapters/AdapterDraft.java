@@ -68,14 +68,15 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
        final String qID = modelDraft.getQuestionID();
        final String dID = modelDraft.getDraftID();
        final HashMap<String,String> draft = modelDraft.getDraft();
-
+      // Toast.makeText(context, "d"+dID + "u "+uID+"q"+ qID, Toast.LENGTH_SHORT).show();
         draftId = modelDraft.getDraftID();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions").child(qID).child("text");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions/"+qID+"/text");
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 qText = dataSnapshot.getValue(String.class);
+                holder.question.setText(qText);
 
             }
 
@@ -88,7 +89,7 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
         });
 
 
-        holder.question.setText(qText);
+
         holder.editDraft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,7 +100,7 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
                 i.putExtra("EXTRA_USER_ID",uID);
                 i.putExtra("EXTRA_DRAFT_ANSWER",draft);
 
-                Toast.makeText(context, "Button Clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Button Clicked", Toast.LENGTH_SHORT).show();
                 context.startActivity(i);
 
             }
@@ -111,19 +112,20 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
             @Override
             public void onClick(View v) {
                 Query query = FirebaseDatabase.getInstance().getReference("Drafts/"+draftId);
-                Toast.makeText(context, "d "+modelDraft.getDraftID(), Toast.LENGTH_SHORT).show();
+
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            ModelDraft modelDraft = ds.getValue(ModelDraft.class);
 
+                            ModelDraft modelDraft = dataSnapshot.getValue(ModelDraft.class);
+                            draftId = modelDraft.getDraftID();
 
-                            FirebaseDatabase.getInstance().getReference("Drafts").child(dID).removeValue();
+                            FirebaseDatabase.getInstance().getReference("Drafts").child(draftId).removeValue();
                             deleteItem(modelDraft);
+                        Toast.makeText(context, "Draft Deleted", Toast.LENGTH_SHORT).show();
 
-                        }
+
                     }
 
                     @Override
@@ -135,13 +137,6 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
                 });
             }
         });
-
-
-
-
-
-
-
     }
 
     @Override

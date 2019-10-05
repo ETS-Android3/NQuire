@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -210,6 +211,7 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
         modelAnswerArrayList.clear();
         notifyDataSetChanged();
     }
+
 
 
 }
