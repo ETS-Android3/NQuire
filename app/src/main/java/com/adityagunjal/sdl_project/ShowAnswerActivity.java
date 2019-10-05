@@ -84,6 +84,8 @@ public class ShowAnswerActivity extends AppCompatActivity {
     }
 
     public void showAnswer(ModelAnswer answer, ModelUser user){
+
+        modelAnswer = answer;
         Bundle bundle = new Bundle();
         bundle.putSerializable("ModelUser", user);
         bundle.putSerializable("ModelAnswer", answer);
