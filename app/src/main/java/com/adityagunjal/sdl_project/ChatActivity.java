@@ -95,7 +95,7 @@ public class ChatActivity extends AppCompatActivity {
         messageText = findViewById(R.id.entered_message);
         populateRecyclerView();
 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     public void populateRecyclerView(){
@@ -113,6 +113,7 @@ public class ChatActivity extends AppCompatActivity {
                         recyclerView.scrollToPosition(adapterChat.getItemCount() - 1);
                         messageText.setText("");
                         messageText.clearFocus();
+
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         try {
                             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);

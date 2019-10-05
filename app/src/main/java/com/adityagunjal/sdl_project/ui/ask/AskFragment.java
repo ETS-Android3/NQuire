@@ -53,6 +53,11 @@ public class AskFragment extends Fragment {
         @Override
         public void onClick(View view) {
             String text = editAsk.getText().toString().trim();
+
+            if(text == null || text.equals("")){
+                return;
+            }
+
             Calendar c = Calendar.getInstance();
 
             String date = c.getTime().toString();

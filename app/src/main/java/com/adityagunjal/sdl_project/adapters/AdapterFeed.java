@@ -18,12 +18,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adityagunjal.sdl_project.MainActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.ShowAnswerActivity;
+import com.adityagunjal.sdl_project.SplashActivity;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelFeed;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.Serializable;
@@ -41,9 +46,12 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
     Context context;
     ArrayList<ModelFeed> modelFeedArrayList;
 
+    String userID;
+
     public AdapterFeed(Context context, ArrayList<ModelFeed> modelFeedArrayList){
         this.context = context;
         this.modelFeedArrayList = modelFeedArrayList;
+        this.userID = SplashActivity.userInfo.getUserID();
     }
 
     @NonNull
@@ -69,10 +77,55 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
 
         holder.name.setText(modelUser.getUsername());
         holder.question.setText(modelQuestion.getText());
-        holder.lastUpdated.setText(modelAnswer.getDate());
+        holder.lastUpdated.setText(modelAnswer.getDate().substring(0, 16));
         holder.likes.setText(Integer.toString(modelAnswer.getUpvotes()));
         holder.dislikes.setText(Integer.toString(modelAnswer.getDownvotes()));
-        holder.comments.setText(Integer.toString(modelAnswer.getComments()) + " comments");
+        holder.comments.setText(Integer.toString(modelAnswer.getComments()));
+
+        FirebaseDatabase.getInstance().getReference("Answers")
+                .child(modelAnswer.getAnswerID())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        modelAnswer.setUpvotes(dataSnapshot.child("upvotes").getValue(Integer.class));
+                        modelAnswer.setDownvotes(dataSnapshot.child("downvotes").getValue(Integer.class));
+                        modelAnswer.setComments(dataSnapshot.child("comments").getValue(Integer.class));
+
+                        holder.likes.setText(Integer.toString(modelAnswer.getUpvotes()));
+                        holder.dislikes.setText(Integer.toString(modelAnswer.getDownvotes()));
+                        holder.comments.setText(Integer.toString(modelAnswer.getComments()));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+        FirebaseDatabase.getInstance().getReference("Likes")
+                .child(modelAnswer.getAnswerID())
+                .child(userID)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            if(dataSnapshot.getValue(Boolean.class)){
+                                holder.upvoteImage.setImageResource(R.drawable.ic_upvote_active);
+                            }else{
+                                holder.downvoteImage.setImageResource(R.drawable.ic_downvote_active);
+                            }
+                        }
+                        else{
+                            holder.upvoteImage.setImageResource(R.drawable.ic_upvote_icon);
+                            holder.downvoteImage.setImageResource(R.drawable.ic_downvote_icon);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
         HashMap<String, String> answerMap = modelAnswer.getAnswer();
 
@@ -166,7 +219,7 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
 
         TextView name, answer, question, lastUpdated, likes, dislikes, comments;
         CircleImageView profilePic;
-        ImageView answerImage;
+        ImageView answerImage, upvoteImage, downvoteImage;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -183,6 +236,9 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
             likes = itemView.findViewById(R.id.feed_answer_like);
             dislikes = itemView.findViewById(R.id.feed_answer_dislike);
             comments = itemView.findViewById(R.id.feed_answer_comment);
+            upvoteImage =itemView.findViewById(R.id.card_upvote);
+            downvoteImage = itemView.findViewById(R.id.card_downvote);
+
         }
 
     }

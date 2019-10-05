@@ -114,6 +114,7 @@ public class AllAnswersFragment extends Fragment implements View.OnClickListener
 
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     ModelAnswer modelAnswer = ds.getValue(ModelAnswer.class);
+                    modelAnswer.setAnswerID(ds.getKey());
                     adapterAnswer.addNewItem(modelAnswer);
                 }
             }

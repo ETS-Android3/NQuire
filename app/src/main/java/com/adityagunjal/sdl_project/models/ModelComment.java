@@ -1,36 +1,29 @@
 package com.adityagunjal.sdl_project.models;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class ModelComment {
 
-    public int commentProfilePic;
-    public String username;
+    String commentID;
+    public String userID;
     public String lastUpdated;
     public String comment;
+    public Object timestamp;
+
 
     public ModelComment(){}
 
-    public ModelComment(int commentProfilePic, String username, String lastUpdated, String comment){
-        this.commentProfilePic = commentProfilePic;
-        this.username = username;
-        this.lastUpdated = lastUpdated;
+    public ModelComment(String commentID, String comment, String userID){
+
+        this.commentID = commentID;
+        this.userID = userID;
         this.comment = comment;
+
+        lastUpdated = Calendar.getInstance().getTime().toString();
+        timestamp = new Date().getTime();
     }
 
-    public int getCommentProfilePic() {
-        return commentProfilePic;
-    }
-
-    public void setCommentProfilePic(int commentProfilePic) {
-        this.commentProfilePic = commentProfilePic;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getLastUpdated() {
         return lastUpdated;
@@ -44,7 +37,32 @@ public class ModelComment {
         return comment;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public Object getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Object timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+
+    public String getCommentID() {
+        return commentID;
+    }
+
+    public void setCommentID(String commentID) {
+        this.commentID = commentID;
     }
 }

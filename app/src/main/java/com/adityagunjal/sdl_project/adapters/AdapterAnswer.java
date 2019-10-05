@@ -63,8 +63,8 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
 
         holder.likes.setText(Integer.toString(modelAnswer.getUpvotes()));
         holder.dislikes.setText(Integer.toString(modelAnswer.getDownvotes()));
-        holder.comments.setText(Integer.toString(modelAnswer.getComments()) + " comments");
-        holder.lastUpdated.setText(modelAnswer.getDate());
+        holder.comments.setText(Integer.toString(modelAnswer.getComments()));
+        holder.lastUpdated.setText(modelAnswer.getDate().substring(0, 16));
 
         float factor = holder.answer.getContext().getResources().getDisplayMetrics().density;
 
