@@ -24,10 +24,10 @@
         android:id="@+id/back_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
+        android:textSize="40sp"
         android:textAlignment="center"
-        android:background="@color/light_grey"
-        android:textColor="@color/dark_grey"
+        android:background="@color/colorAccent"
+        android:textColor="@color/white"
         android:text="X"
         android:clickable="true"
         android:onClick="onBackPressed"/>

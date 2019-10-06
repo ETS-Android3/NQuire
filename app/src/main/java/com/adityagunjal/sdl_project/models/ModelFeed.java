@@ -3,8 +3,7 @@ package com.adityagunjal.sdl_project.models;
 import com.adityagunjal.sdl_project.R;
 
 public class ModelFeed {
-    //public int id, likes, comments, profile_pic, dislikes;
-    //public String name, question, lastUpdate, answer;
+
     public ModelQuestion question;
     public ModelUser user;
     public ModelAnswer answer;

@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 
 import com.adityagunjal.sdl_project.ProfileActivity;
 import com.adityagunjal.sdl_project.R;
+import com.adityagunjal.sdl_project.SplashActivity;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
 import com.adityagunjal.sdl_project.models.ModelUser;
@@ -104,7 +105,30 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
         date.setText(modelAnswer.getDate());
         upvoteCount.setText(Integer.toString(modelAnswer.getUpvotes()));
         downvoteCount.setText(Integer.toString(modelAnswer.getDownvotes()));
-        commentCount.setText(Integer.toString(modelAnswer.getComments()) + " comments");
+        commentCount.setText(Integer.toString(modelAnswer.getComments()));
+
+        FirebaseDatabase.getInstance().getReference("Likes")
+                .child(modelAnswer.getAnswerID())
+                .child(SplashActivity.userInfo.getUserID())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            if((dataSnapshot.getValue(Boolean.class))) {
+                                upvoteImage.setImageResource(R.drawable.ic_upvote_active);
+                                isAnswerUpvoted = true;
+                            }else{
+                                downvoteImage.setImageResource(R.drawable.ic_downvote_active);
+                                isAnswerDownvoted = true;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
         float factor =  getContext().getResources().getDisplayMetrics().density;
 
@@ -207,11 +231,85 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.one_answer_upvote_image){
+        if(view.getId() == R.id.one_answer_upvote_image && !isAnswerDownvoted){
 
+            if(isAnswerUpvoted){
+                isAnswerUpvoted = false;
+                upvoteImage.setImageResource(R.drawable.ic_upvote_icon);
+                modelAnswer.setUpvotes(modelAnswer.getUpvotes() - 1);
+            }else{
+                isAnswerUpvoted = true;
+                upvoteImage.setImageResource(R.drawable.ic_upvote_active);
+                modelAnswer.setUpvotes(modelAnswer.getUpvotes() + 1);
+            }
+
+            upvoteCount.setText(Integer.toString(modelAnswer.getUpvotes()));
+
+            upvoteImage.setClickable(false);
+
+            FirebaseDatabase.getInstance().getReference("Likes")
+                    .child(modelAnswer.getAnswerID())
+                    .child(SplashActivity.userInfo.getUserID())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                dataSnapshot.getRef().removeValue();
+                            }else{
+                                dataSnapshot.getRef().setValue(true);
+                            }
+                            FirebaseDatabase.getInstance().getReference("Answers")
+                                    .child(modelAnswer.getAnswerID())
+                                    .child("upvotes")
+                                    .setValue(modelAnswer.getUpvotes());
+                            upvoteImage.setClickable(true);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            upvoteImage.setClickable(true);
+                        }
+                    });
         }
-        if(view.getId() == R.id.one_answer_downvote_image){
+        if(view.getId() == R.id.one_answer_downvote_image && !isAnswerUpvoted){
 
+            if(isAnswerDownvoted){
+                isAnswerDownvoted = false;
+                downvoteImage.setImageResource(R.drawable.ic_downvote_icon);
+                modelAnswer.setDownvotes(modelAnswer.getDownvotes() - 1);
+            } else {
+                isAnswerDownvoted = true;
+                downvoteImage.setImageResource(R.drawable.ic_downvote_active);
+                modelAnswer.setDownvotes(modelAnswer.getDownvotes() + 1);
+            }
+
+            downvoteCount.setText(Integer.toString(modelAnswer.getDownvotes()));
+
+            downvoteImage.setClickable(false);
+
+            FirebaseDatabase.getInstance().getReference("Likes")
+                    .child(modelAnswer.getAnswerID())
+                    .child(SplashActivity.userInfo.getUserID())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                dataSnapshot.getRef().removeValue();
+                            }else{
+                                dataSnapshot.getRef().setValue(false);
+                            }
+                            FirebaseDatabase.getInstance().getReference("Answers")
+                                    .child(modelAnswer.getAnswerID())
+                                    .child("downvotes")
+                                    .setValue(modelAnswer.getDownvotes());
+                            downvoteImage.setClickable(true);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            downvoteImage.setClickable(true);
+                        }
+                    });
         }
     }
 

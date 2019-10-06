@@ -27,35 +27,52 @@ public class ShowAnswerActivity extends AppCompatActivity {
     Fragment currentAnswer;
 
     ModelQuestion modelQuestion;
+    ModelAnswer modelAnswer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_answer);
 
-        currentFragment = new OneAnswerFragment();
-
         Intent i = getIntent();
+        String flag = i.getStringExtra("EXTRA_FLAG");
+
         modelQuestion = (ModelQuestion) i.getSerializableExtra("EXTRA_QUESTION");
 
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("ModelUser", i.getSerializableExtra("EXTRA_USER"));
-        bundle.putSerializable("ModelAnswer", i.getSerializableExtra("EXTRA_ANSWER"));
-        bundle.putSerializable("ModelQuestion", i.getSerializableExtra("EXTRA_QUESTION"));
+        if(flag != null && flag.equals("ALL")){
 
-        currentFragment.setArguments(bundle);
+            onViewMoreAnswers(null);
 
-        currentAnswer = currentFragment;
+        }else {
+            currentFragment = new OneAnswerFragment();
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, currentFragment).commit();
+            modelAnswer = (ModelAnswer) i.getSerializableExtra("EXTRA_ANSWER");
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("ModelUser", i.getSerializableExtra("EXTRA_USER"));
+            bundle.putSerializable("ModelAnswer", i.getSerializableExtra("EXTRA_ANSWER"));
+            bundle.putSerializable("ModelQuestion", i.getSerializableExtra("EXTRA_QUESTION"));
+
+            currentFragment.setArguments(bundle);
+
+            currentAnswer = currentFragment;
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.answer_frame_container, currentFragment).commit();
+        }
 
     }
 
     public void onCommentClick(View view){
         showComments = !showComments;
         if(showComments){
+            Fragment cf = new CommentFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("EXTRA_ANSWER_ID", modelAnswer.getAnswerID());
+
+            cf.setArguments(bundle);
+
             FragmentTransaction ft = currentFragment.getChildFragmentManager().beginTransaction();
-            ft.replace(R.id.comment_container, new CommentFragment());
+            ft.replace(R.id.comment_container, cf);
             ft.addToBackStack(null);
             ft.commit();
         }
@@ -67,6 +84,8 @@ public class ShowAnswerActivity extends AppCompatActivity {
     }
 
     public void showAnswer(ModelAnswer answer, ModelUser user){
+
+        modelAnswer = answer;
         Bundle bundle = new Bundle();
         bundle.putSerializable("ModelUser", user);
         bundle.putSerializable("ModelAnswer", answer);

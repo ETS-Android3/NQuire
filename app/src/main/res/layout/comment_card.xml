@@ -15,7 +15,7 @@
                 android:layout_height="wrap_content">
 
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_marginLeft="15dp"
                     android:id="@+id/comment_profile_pic"
                     android:layout_width="37dp"
@@ -37,15 +37,13 @@
                         android:layout_height="wrap_content"
                         android:textSize="12sp"
                         android:textColor="@color/black"
-                        android:textStyle="bold"
-                        android:text="Username" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/comment_last_updated"
                         android:layout_marginLeft="15dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="12 hrs ago"
                         android:textColor="@color/grey"
                         android:textSize="10sp"/>
                 </LinearLayout>

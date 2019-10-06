@@ -111,88 +111,79 @@
                     android:layout_marginRight="15dp"
                     android:orientation="vertical">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="10dp"
                         android:orientation="horizontal"
                         android:scaleType="center">
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1">
-
                             <ImageView
+                                android:layout_marginLeft="5dp"
                                 android:id="@+id/one_answer_upvote_image"
-                                android:layout_width="17dp"
-                                android:layout_height="17dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:src="@drawable/ic_upvote_icon" />
 
                             <TextView
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@id/one_answer_upvote_image"
                                 android:id="@+id/one_answer_upvote_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="7dp"
                                 android:text="0"
-                                android:textSize="12sp" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1">
+                                android:textSize="15sp"
+                                android:layout_marginLeft="10dp"/>
 
                             <ImageView
+                                android:layout_marginLeft="30dp"
+                                android:layout_toEndOf="@id/one_answer_upvote_count"
                                 android:id="@+id/one_answer_downvote_image"
-                                android:layout_width="17dp"
-                                android:layout_height="17dp"
-                                android:src="@drawable/ic_downvote_icon" />
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_downvote_icon"/>
 
                             <TextView
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@id/one_answer_downvote_image"
                                 android:id="@+id/one_answer_downvote_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="7dp"
                                 android:text="0"
-                                android:textSize="12sp" />
+                                android:textSize="15sp"
+                                android:layout_marginLeft="10dp" />
 
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1">
 
                             <ImageView
+                                android:layout_marginLeft="30dp"
+                                android:layout_toEndOf="@id/one_answer_downvote_count"
                                 android:id="@+id/card_comment"
-                                android:layout_width="12dp"
-                                android:layout_height="17dp"
-                                android:clickable="true"
-                                android:onClick="onCommentClick"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:src="@drawable/ic_comment_icon" />
 
                             <TextView
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@id/card_comment"
                                 android:id="@+id/one_answer_comment_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="7dp"
                                 android:text="0 comments"
-                                android:textSize="12sp"
+                                android:textSize="15sp"
                                 android:clickable="true"
                                 android:onClick="onCommentClick"/>
 
-                        </LinearLayout>
-
                         <ImageView
-                            android:id="@+id/card_more_button"
-                            android:layout_width="17dp"
-                            android:layout_height="17dp"
-                            android:src="@drawable/ic_more_icon" />
 
-                    </LinearLayout>
+                            android:layout_alignParentRight="true"
+                            android:id="@+id/card_more_button"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_more_icon"  />
+
+                    </RelativeLayout>
 
                     <FrameLayout
                         android:id="@+id/comment_container"

@@ -65,8 +65,8 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
 
         holder.likes.setText(Integer.toString(modelAnswer.getUpvotes()));
         holder.dislikes.setText(Integer.toString(modelAnswer.getDownvotes()));
-        holder.comments.setText(Integer.toString(modelAnswer.getComments()) + " comments");
-        holder.lastUpdated.setText(modelAnswer.getDate());
+        holder.comments.setText(Integer.toString(modelAnswer.getComments()));
+        holder.lastUpdated.setText(modelAnswer.getDate().substring(0, 16));
 
         float factor = holder.answer.getContext().getResources().getDisplayMetrics().density;
 
@@ -198,7 +198,7 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
             lastUpdated = itemView.findViewById(R.id.all_answer_update_info);
             likes = itemView.findViewById(R.id.all_answer_like);
             dislikes = itemView.findViewById(R.id.all_answer_dislike);
-            comments = itemView.findViewById(R.id.all_answer_comments);
+            comments = itemView.findViewById(R.id.all_answer_comment);
         }
     }
 

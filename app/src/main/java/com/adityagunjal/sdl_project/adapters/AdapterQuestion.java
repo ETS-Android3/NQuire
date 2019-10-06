@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adityagunjal.sdl_project.AnswerQuestionActivity;
 import com.adityagunjal.sdl_project.R;
+import com.adityagunjal.sdl_project.ShowAnswerActivity;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -58,6 +59,19 @@ public class AdapterQuestion extends RecyclerView.Adapter<AdapterQuestion.MyView
 
                 context.startActivity(i);
             }
+
+            @Override
+            public void showAnswers(int position) {
+                ModelQuestion modelQuestion = modelQuestionArrayList.get(position);
+
+                if(modelQuestion.getAnswers() > 0){
+                    Intent i = new Intent(context, ShowAnswerActivity.class);
+                    i.putExtra("EXTRA_QUESTION", modelQuestion);
+                    i.putExtra("EXTRA_FLAG", "ALL");
+
+                    context.startActivity(i);
+                }
+            }
         });
 
         return  myViewHolder;
@@ -70,7 +84,7 @@ public class AdapterQuestion extends RecyclerView.Adapter<AdapterQuestion.MyView
         holder.question.setText(modelQuestion.getText());
         String answerString = (modelQuestion.getAnswers() == 0) ? "Not Answers yet": Integer.toString(modelQuestion.getAnswers()) + " Answers";
         holder.answers.setText(answerString);
-        holder.askDate.setText(modelQuestion.getDate());
+        holder.askDate.setText(modelQuestion.getDate().substring(0, 16));
     }
 
     @Override
@@ -101,12 +115,15 @@ public class AdapterQuestion extends RecyclerView.Adapter<AdapterQuestion.MyView
             this.answerQuestionClickedListener = listener;
             answerQuestionImage.setOnClickListener(this);
             answerHere.setOnClickListener(this);
-
+            answers.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            answerQuestionClickedListener.answerQuestion(this.getLayoutPosition());
+            if(view.getId() == R.id.answer_question_symbol)
+                answerQuestionClickedListener.answerQuestion(this.getLayoutPosition());
+            if(view.getId() == R.id.no_of_answers)
+                answerQuestionClickedListener.showAnswers(this.getLayoutPosition());
         }
 
     }
@@ -118,5 +135,6 @@ public class AdapterQuestion extends RecyclerView.Adapter<AdapterQuestion.MyView
 
     public interface MyClickListener{
         void answerQuestion(int position);
+        void showAnswers(int position);
     }
 }
