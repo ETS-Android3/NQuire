@@ -1,6 +1,7 @@
 package com.adityagunjal.sdl_project.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,12 +9,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.ShowAnswerActivity;
+import com.adityagunjal.sdl_project.SplashActivity;
 import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -91,9 +94,9 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
         String answerText = "";
         int flag0 = 0, flag1 = 0;
         while(answerIterator.hasNext()){
-            Map.Entry<String, String> answerElement = (Map.Entry) answerIterator.next();
-            String key = answerElement.getKey();
-            if(key.charAt(0) == 't'){
+            Map.Entry<Integer, String> answerElement = (Map.Entry) answerIterator.next();
+            Integer key = answerElement.getKey();
+            if(key % 2 == 0){
                 String text = answerElement.getValue();
                 for(int i = 0; i < text.length() && answerText.length() < 100; i++){
                     answerText += text.charAt(i);
@@ -105,8 +108,12 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
                             .addOnCompleteListener(new OnCompleteListener<byte[]>() {
                                 @Override
                                 public void onComplete(@NonNull Task<byte[]> task) {
-                                    holder.answerImage.setImageBitmap(BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length));
-                                    holder.answerImage.setVisibility(View.VISIBLE);
+                                    if(task.isSuccessful()){
+                                        holder.answerImage.setImageBitmap(BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length));
+                                        holder.answerImage.setVisibility(View.VISIBLE);
+                                    } else {
+                                        Toast.makeText(context, task.getException().toString(), Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             });
                     flag1 = 1;
@@ -164,6 +171,26 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
                     }
                 });
 
+        FirebaseDatabase.getInstance().getReference("Likes")
+                .child(modelAnswer.getAnswerID()).child(SplashActivity.userInfo.getUserID())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            if(dataSnapshot.getValue(Boolean.class)){
+                                holder.likedImage.setImageResource(R.drawable.ic_upvote_active);
+                            }else{
+                                holder.dislikedImage.setImageResource(R.drawable.ic_downvote_active);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,7 +210,7 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
 
         TextView name, answer, lastUpdated, likes, dislikes, comments;
         CircleImageView profilePic;
-        ImageView answerImage;
+        ImageView answerImage, likedImage, dislikedImage;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -199,6 +226,8 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
             likes = itemView.findViewById(R.id.all_answer_like);
             dislikes = itemView.findViewById(R.id.all_answer_dislike);
             comments = itemView.findViewById(R.id.all_answer_comment);
+            likedImage = itemView.findViewById(R.id.card_upvote);
+            dislikedImage = itemView.findViewById(R.id.card_downvote);
         }
     }
 

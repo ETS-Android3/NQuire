@@ -153,16 +153,7 @@ public class ChatActivity extends AppCompatActivity {
         DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chats/" + chatID).child("Messages").push();
         modelMessage.setMessageID(chatRef.getKey());
 
-
-        chatRef.setValue(modelMessage);/*.addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    adapterChat.addItem(modelMessage);
-                }
-            }
-        });*/
-
+        chatRef.setValue(modelMessage);
     }
 
 }

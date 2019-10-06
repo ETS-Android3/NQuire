@@ -1,70 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/light_grey"
     android:orientation="vertical">
 
 
 
     <SearchView
+        android:background="@color/white"
         android:id="@+id/search_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:queryHint="Search ..."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:iconifiedByDefault="false"/>
 
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/white"
-        >
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/question_card_filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-
-       android:layout_marginRight="5dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@null">
-
-            <TextView
-                android:id="@+id/question_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|center_horizontal|center_vertical"
-                android:layout_marginLeft="12dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="15dp"
-                android:text="Questions"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+        android:orientation="horizontal">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/user_card_filter"
-            android:layout_width="wrap_content"
+            android:id="@+id/question_card_filter"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-
-            android:layout_marginTop="6dp"
+            android:layout_margin="10dp"
             android:layout_weight="1">
 
             <LinearLayout
-                android:layout_width="182dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@null">
+
+                <TextView
+                    android:id="@+id/question_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Questions"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:padding="7dp"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/user_card_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@null"
@@ -75,12 +71,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="15dp"
                     android:text="Users"
+                    android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:padding="7dp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -88,9 +83,10 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="10dp"
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+</LinearLayout>

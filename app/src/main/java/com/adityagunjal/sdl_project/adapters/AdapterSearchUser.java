@@ -32,11 +32,10 @@ public class AdapterSearchUser extends RecyclerView.Adapter<AdapterSearchUser.Us
 
     Context context;
 
-    ArrayList<String> userNameList;
-    ArrayList<String> fullNameList;
-    ArrayList<String> profilePicList;
     String uid;
     ModelUser user;
+
+    ArrayList<ModelUser> modelUserArrayList;
 
 
 
@@ -49,19 +48,16 @@ public class AdapterSearchUser extends RecyclerView.Adapter<AdapterSearchUser.Us
         public UserSearchViewHolder(View itemView) {
             super(itemView);
 
-            full_name = (TextView) itemView.findViewById(R.id.full_name);
-            user_name = (TextView) itemView.findViewById(R.id.user_name);
+            full_name =  itemView.findViewById(R.id.full_name);
+            user_name =  itemView.findViewById(R.id.user_name);
             profilePic = itemView.findViewById(R.id.profileImage);
 
         }
     }
 
-    public AdapterSearchUser(Context context, ArrayList<String> userNameList, ArrayList<String> fullNameList, ArrayList<String> profilePicList) {
+    public AdapterSearchUser(Context context, ArrayList<ModelUser> modelUserArrayList) {
         this.context = context;
-        this.userNameList = userNameList;
-        this.fullNameList = fullNameList;
-        this.profilePicList = profilePicList;
-
+        this.modelUserArrayList = modelUserArrayList;
     }
 
 
@@ -78,72 +74,57 @@ public class AdapterSearchUser extends RecyclerView.Adapter<AdapterSearchUser.Us
 
     @Override
     public void onBindViewHolder(final UserSearchViewHolder holder, int position) {
-        // holder.question.setText(questionList.get(position));
 
-            holder.user_name.setText(userNameList.get(position));
-            holder.full_name.setText(fullNameList.get(position));
+        final ModelUser modelUser = modelUserArrayList.get(position);
 
-        FirebaseStorage.getInstance().getReference(profilePicList.get(position))
-                .getBytes(1024 * 1024)
-                .addOnCompleteListener(new OnCompleteListener<byte[]>() {
-                    @Override
-                    public void onComplete(@NonNull Task<byte[]> task) {
-                        if (task.isSuccessful()) {
-                            Bitmap image = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
-                            holder.profilePic.setImageBitmap(image);
-                        } else {
-                            holder.profilePic.setImageResource(R.drawable.ic_profile_pic);
+        holder.user_name.setText(modelUser.getUsername());
+        holder.full_name.setText(modelUser.getFirstName() + " " + modelUser.getLastName());
+
+        if(modelUser.getImagePath().equals("default")) {
+            holder.profilePic.setImageResource(R.drawable.ic_profile_pic);
+        } else{
+            FirebaseStorage.getInstance().getReference(modelUser.getImagePath())
+                    .getBytes(1024 * 1024)
+                    .addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                        @Override
+                        public void onComplete(@NonNull Task<byte[]> task) {
+                            if (task.isSuccessful()) {
+                                Bitmap image = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                                holder.profilePic.setImageBitmap(image);
+                            } else {
+                                holder.profilePic.setImageResource(R.drawable.ic_profile_pic);
+                            }
                         }
-                    }
-                });
-        FirebaseDatabase.getInstance().getReference("Usernames/"+userNameList.get(position)+"/uid").addValueEventListener(new ValueEventListener() {
+                    });
+        }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                uid = dataSnapshot.getValue(String.class);
-                //Toast.makeText(context, uid, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        holder.user_name.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              //  Toast.makeText(context, "Full Name Clicked", Toast.LENGTH_SHORT).show();
-
-                FirebaseDatabase.getInstance().getReference(uid).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        user = dataSnapshot.getValue(ModelUser.class);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+            public void onClick(View view) {
                 Intent i = new Intent(context, ProfileActivity.class);
-                i.putExtra("EXTRA_USER",user);
-                i.putExtra("EXTRA_USER_ID",uid);
+                i.putExtra("EXTRA_USER", modelUser);
+                i.putExtra("EXTRA_USER_ID", modelUser.getUserID());
                 context.startActivity(i);
-
             }
-
-
-
         });
-
-
-
 
     }
 
     @Override
     public int getItemCount() {
-        return userNameList.size();}
+        return modelUserArrayList.size();
+    }
+
+    public void addNewItem(ModelUser modelUser){
+        modelUserArrayList.add(modelUser);
+        notifyDataSetChanged();
+    }
+
+    public void removeAll(){
+        modelUserArrayList.clear();
+        notifyDataSetChanged();
+    }
+
 }
 
 

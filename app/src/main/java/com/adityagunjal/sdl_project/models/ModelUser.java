@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ModelUser implements Serializable {
-    public String firstName, lastName, username, email, registrationID, imagePath, bio;
+    public String firstName, lastName, username, email, registrationID, imagePath, bio, userID;
     int questionCount, answerCount,draftCount;
     public ArrayList<String> questionsArrayList;
     public ArrayList<String> answersArrayList;
@@ -123,6 +123,14 @@ public class ModelUser implements Serializable {
 
     public void setChatsList(ArrayList<String> chatsList) {
         this.chatsList = chatsList;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public ModelUser(String firstName, String lastName, String username, String email, String registrationID){

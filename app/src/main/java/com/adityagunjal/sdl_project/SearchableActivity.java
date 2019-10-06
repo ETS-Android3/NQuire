@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adityagunjal.sdl_project.adapters.AdapterSearchQuestion;
 import com.adityagunjal.sdl_project.adapters.AdapterSearchUser;
+import com.adityagunjal.sdl_project.models.ModelQuestion;
+import com.adityagunjal.sdl_project.models.ModelUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,13 +43,12 @@ public class SearchableActivity extends AppCompatActivity {
     ArrayList<String> questionList;
     ArrayList<String> userNameList;
     ArrayList<String> fullNameList;
-    ArrayList<String> profilePicList;
-    EditText search_edit_text;
-    //SearchView searchView;
-   AdapterSearchUser searchAdapterUser;
-   AdapterSearchQuestion searchAdapterQuestion;
+    ArrayList<ModelQuestion> modelQuestionArrayList;
+    ArrayList<ModelUser> modelUserArrayList;
+
+    AdapterSearchUser searchAdapterUser;
+    AdapterSearchQuestion searchAdapterQuestion;
     SearchView searchView;
-    FrameLayout frameLayout;
     CardView questionsCard,usersCard;
     int mainFlag = 0;
 
@@ -58,16 +59,13 @@ public class SearchableActivity extends AppCompatActivity {
 
         searchView = findViewById(R.id.search_toolbar);
         int id = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-        TextView textView = (TextView) searchView.findViewById(id);
+        TextView textView = searchView.findViewById(id);
         textView.setTextColor(getResources().getColor(R.color.black));
         questionsCard = findViewById(R.id.question_card_filter);
         usersCard = findViewById(R.id.user_card_filter);
 
-
-         //frameLayout = findViewById(R.id.search_fragment_container);
         recyclerView =  findViewById(R.id.recyclerView);
-       // search_edit_text = (EditText) findViewById(R.id.search_edit_text);
-        //searchView = findViewById(R.id.search_toolbar);
+
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -78,36 +76,54 @@ public class SearchableActivity extends AppCompatActivity {
         questionList = new ArrayList<>();
         userNameList = new ArrayList<>();
         fullNameList = new ArrayList<>();
-        profilePicList = new ArrayList<>();
+        modelQuestionArrayList = new ArrayList<>();
+        modelUserArrayList = new ArrayList<>();
+
+        searchAdapterQuestion = new AdapterSearchQuestion(SearchableActivity.this, modelQuestionArrayList);
+        recyclerView.setAdapter(searchAdapterQuestion);
+
+        searchAdapterUser = new AdapterSearchUser(SearchableActivity.this, modelUserArrayList);
+
+        final float factor1 = usersCard.getContext().getResources().getDisplayMetrics().density;
+        final float factor2 = questionsCard.getContext().getResources().getDisplayMetrics().density;
+
+        usersCard.setCardBackgroundColor(getResources().getColor((R.color.white)));
+        questionsCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+        questionsCard.setCardElevation(20 * factor2);
+        ((TextView) questionsCard.findViewById(R.id.question_text)).setTextColor(getResources().getColor(R.color.white));
+        usersCard.setCardElevation(0);
+        mainFlag = 1;
 
         questionsCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 usersCard.setCardBackgroundColor(getResources().getColor((R.color.white)));
-                questionsCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                questionsCard.setCardElevation(20);
+                questionsCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                ((TextView) questionsCard.findViewById(R.id.question_text)).setTextColor(getResources().getColor(R.color.white));
+                ((TextView) usersCard.findViewById(R.id.user_text)).setTextColor(getResources().getColor(R.color.black));
+                questionsCard.setCardElevation(20 * factor2);
                 usersCard.setCardElevation(0);
                 mainFlag = 1;
                 fullNameList.clear();
                 userNameList.clear();
-                profilePicList.clear();
-                recyclerView.removeAllViews();
-
+                searchAdapterUser.removeAll();
             }
         });
 
-                usersCard.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        questionsCard.setCardBackgroundColor(getResources().getColor((R.color.white)));
-                        usersCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                        usersCard.setCardElevation(20);
-                        questionsCard.setCardElevation(0);
-                        mainFlag = 0;
-                        questionList.clear();
-                        recyclerView.removeAllViews();
-                    }
-                });
+        usersCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                questionsCard.setCardBackgroundColor(getResources().getColor((R.color.white)));
+                usersCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                ((TextView) questionsCard.findViewById(R.id.question_text)).setTextColor(getResources().getColor(R.color.black));
+                ((TextView) usersCard.findViewById(R.id.user_text)).setTextColor(getResources().getColor(R.color.white));
+                usersCard.setCardElevation(20 * factor1);
+                questionsCard.setCardElevation(0);
+                mainFlag = 0;
+                questionList.clear();
+                searchAdapterQuestion.removeAll();
+            }
+        });
 
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -129,101 +145,66 @@ public class SearchableActivity extends AppCompatActivity {
                         setAdapterQuestions(s);
                     }
                 }
-                    //setAdapterQuestions(s.toString());
 
                 return true;
             }
         });
 
-
-
-
-        /*search_edit_text.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (!s.toString().isEmpty()) {
-                    setAdapter(s.toString());
-                    //setAdapterQuestions(s.toString());
-                } else {
-                    fullNameList.clear();
-                    questionList.clear();
-                    userNameList.clear();
-                    profilePicList.clear();
-
-                    recyclerView.removeAllViews();
-                }
-            }
-        });*/
     }
 
     private void setAdapter(final String searchedString) {
+
+        recyclerView.setAdapter(searchAdapterUser);
         databaseReference.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         fullNameList.clear();
                         userNameList.clear();
-                        profilePicList.clear();
-                        recyclerView.removeAllViews();
+                        searchAdapterUser.removeAll();
 
                         int counter = 0;
 
 
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             String uid = snapshot.getKey();
+                            ModelUser modelUser = snapshot.getValue(ModelUser.class);
+                            modelUser.setUserID(uid);
+
                             String fullName;
-                            String firstName = snapshot.child("firstName").getValue(String.class);
-                            String lastName = snapshot.child("lastName").getValue(String.class);
-                         String user_name = snapshot.child("username").getValue(String.class);
-                         String profilePicPath = snapshot.child("imagePath").getValue(String.class);
-                            //String profile_pic = snapshot.child("profile_pic").getValue(String.class);
+                            String firstName = modelUser.getFirstName();
+                            String lastName = modelUser.getLastName();
+                            String user_name = modelUser.getUsername();
 
                             if (user_name.toLowerCase().contains(searchedString.toLowerCase())) {
-                                //questionList.add(full_name);
                                 fullName = firstName +" "+ lastName;
                                 userNameList.add(user_name);
                                 fullNameList.add(fullName);
-                                profilePicList.add(profilePicPath);
+                                searchAdapterUser.addNewItem(modelUser);
 
                                 counter++;
                             } else if (firstName.toLowerCase().contains(searchedString.toLowerCase())) {
-                       //questionList.add(full_name);
-                       // userNameList.add(user_name);
-                                String lastName1 = snapshot.child("lastName").getValue(String.class);
-                                 fullName = firstName +" "+ lastName1;
-                                profilePicList.add(profilePicPath);
-                                userNameList.add(user_name);
-                                 fullNameList.add(fullName);
-
-                        counter++;
-                    }
-                            else if(lastName.toLowerCase().contains(searchedString.toLowerCase()))
-                            {
-                                String firstName1 = snapshot.child("firstName").getValue(String.class);
-                                fullName = firstName1 +" "+ lastName;
-                                profilePicList.add(profilePicPath);
+                                String lastName1 = modelUser.getLastName();
+                                fullName = firstName +" "+ lastName1;
                                 userNameList.add(user_name);
                                 fullNameList.add(fullName);
+                                searchAdapterUser.addNewItem(modelUser);
+
+                                counter++;
+                            } else if(lastName.toLowerCase().contains(searchedString.toLowerCase())) {
+                                String firstName1 = modelUser.getFirstName();
+                                fullName = firstName1 +" "+ lastName;
+                                userNameList.add(user_name);
+                                fullNameList.add(fullName);
+                                searchAdapterUser.addNewItem(modelUser);
                                 counter++;
                             }
-
 
                             if (counter == 15)
                                 break;
                         }
-                        searchAdapterUser = new AdapterSearchUser(SearchableActivity.this, userNameList,fullNameList,profilePicList);
-                        recyclerView.setAdapter(searchAdapterUser);
 
             }
-
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -236,27 +217,29 @@ public class SearchableActivity extends AppCompatActivity {
 
     private void setAdapterQuestions(final String searchedString)
     {
+        recyclerView.setAdapter(searchAdapterQuestion);
         databaseReference.child("questions").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 questionList.clear();
+                searchAdapterQuestion.removeAll();
                 recyclerView.removeAllViews();
 
                 int counter = 0;
 
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String uid = snapshot.getKey();
-                    String fullName;
-                    String qtext = snapshot.child("text").getValue(String.class);
 
-                    //String profile_pic = snapshot.child("profile_pic").getValue(String.class);
+                    String qID = snapshot.getKey();
+                    ModelQuestion modelQuestion = snapshot.getValue(ModelQuestion.class);
+                    modelQuestion.setqID(qID);
+
+                    String qtext = modelQuestion.getText();
 
                     if (qtext.toLowerCase().contains(searchedString.toLowerCase())) {
                         questionList.add(qtext);
-
-
+                        searchAdapterQuestion.addNewItem(modelQuestion);
                         counter++;
                     }
 
@@ -264,8 +247,6 @@ public class SearchableActivity extends AppCompatActivity {
                     if (counter == 15)
                         break;
                 }
-                searchAdapterQuestion = new AdapterSearchQuestion(SearchableActivity.this, questionList);
-                recyclerView.setAdapter(searchAdapterQuestion);
             }
 
 
@@ -274,55 +255,5 @@ public class SearchableActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        handleIntent(intent);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search_toolbar_menu, menu);
-
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        searchItem.expandActionView();
-        SearchView searchView = (SearchView) searchItem.getActionView();
-
-        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                return false;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                SearchableActivity.super.onBackPressed();
-                return false;
-            }
-        });
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        ComponentName componentName = new ComponentName(this, SearchableActivity.class);
-
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
-
-        return true;
-    }
-
-    private void handleIntent(Intent intent){
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            searchQuery(query);
-        }else{
-
-        }
-    }
-
-    public void searchQuery(String query){
-        Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
     }
 }
