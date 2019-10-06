@@ -136,8 +136,6 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case R.id.drawable_nav_logout:
                             firebaseAuth.signOut();
-
-
                             SharedPreferences preferences = getApplicationContext().getSharedPreferences("user_login", MODE_PRIVATE);
                             preferences.edit().clear().commit();
 
@@ -205,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.top_notifications_icon:
                 Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show();
+             //   onNotifsClicked();
                 break;
         }
 
