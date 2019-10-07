@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SDL_PROJECT</string>
+    <string name="app_name">NQuire</string>
     <string name="navigation_drawer_open">Open Navigation Drawer</string>
     <string name="navigation_drawer_close">Close Navigation Drawer</string>
     <string name="forgot_password_message">An One Time Password (OTP) has been sent to your registered E-mail Address.</string>

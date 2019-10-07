@@ -62,9 +62,8 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
     String dID,qID,uID;
     HashMap<String,String> draft =  new HashMap<>();
 
-
-
     TextView questionText;
+    CircleImageView backButton;
 
     @Nullable
     @Override
@@ -99,10 +98,11 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
         deleteDraft = draft_card.findViewById(R.id.del_draft_button);
         deleteDraft.setOnClickListener(this);
 
-
-
         View view = inflater.inflate(R.layout.fragment_draft, container, false);
         deleteAll = view.findViewById(R.id.del_all_button);
+        backButton = view.findViewById(R.id.back_button_icon);
+        backButton.setOnClickListener(this);
+
         deleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,7 +127,6 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         questionText = view.findViewById(R.id.draft_card_question);
-        //questionText.setText();
         adapterDraft = new AdapterDraft(getActivity(), modelDraftArrayList);
         recyclerView.setAdapter(adapterDraft);
 
@@ -138,7 +137,6 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
 
 
     public void populateRecyclerView(){
-
 
         Query query = FirebaseDatabase.getInstance().getReference("Drafts");
 
@@ -161,26 +159,13 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
 
     }
 
-
     @Override
     public void onClick(View view) {
-        switch(view.getId())
-
-        {
+        switch(view.getId()) {
             case R.id.back_button_icon :
                 getActivity().onBackPressed();
-
                 break;
-
-
-
-
-
-
-
         }
-
-
     }
 
 

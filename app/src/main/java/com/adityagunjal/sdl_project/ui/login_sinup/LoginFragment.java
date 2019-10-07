@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ import com.adityagunjal.sdl_project.models.ModelUsernameEmail;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +43,7 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
 
     TextInputEditText usename, password;
     Button login;
-    ProgressBar progressBar;
+    TextInputLayout passwordLayout;
 
     String email;
 
@@ -52,6 +55,25 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
         usename = view.findViewById(R.id.login_username);
         password = view.findViewById(R.id.login_password);
         login = view.findViewById(R.id.login_button);
+
+        passwordLayout = view.findViewById(R.id.password_layout);
+
+        password.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                passwordLayout.setPasswordVisibilityToggleEnabled(true);
+            }
+        });
 
         login.setOnClickListener(this);
 
@@ -109,13 +131,14 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
                                                     editor.commit();
 
                                                     Intent i = new Intent(getActivity(), SplashActivity.class);
+                                                    i.putExtra("EXTRA_FLAG", 1);
                                                     startActivity(i);
                                                     getActivity().finish();
 
                                                     progressDialog.dismiss();
                                                 }else{
+                                                    passwordLayout.setPasswordVisibilityToggleEnabled(false);
                                                     password.setError("Invalid Password !");
-                                                    progressBar.setVisibility(View.GONE);
                                                     progressDialog.dismiss();
                                                 }
                                             }

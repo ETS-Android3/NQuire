@@ -152,6 +152,7 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
                                                                     editor.commit();
 
                                                                     Intent i = new Intent(getActivity(), SplashActivity.class);
+                                                                    i.putExtra("EXTRA_FLAG", 1);
                                                                     startActivity(i);
                                                                     getActivity().finish();
                                                                     progressDialog.dismiss();

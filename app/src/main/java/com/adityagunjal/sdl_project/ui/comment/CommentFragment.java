@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.SplashActivity;
 import com.adityagunjal.sdl_project.adapters.AdapterComment;
+import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelComment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -167,12 +168,29 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
 
             String commentID = ref.getKey();
 
-            ModelComment comment = new ModelComment(commentID, commentText,  SplashActivity.userInfo.getUserID());
+            final ModelComment comment = new ModelComment(commentID, commentText,  SplashActivity.userInfo.getUserID());
 
             ref.setValue(comment).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     postButton.setClickable(true);
+                    if(task.isSuccessful()){
+                        FirebaseDatabase.getInstance().getReference("Answers")
+                                .child(answerID)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        ModelAnswer answer = dataSnapshot.getValue(ModelAnswer.class);
+                                        answer.setComments(answer.getComments() + 1);
+                                        dataSnapshot.getRef().setValue(answer);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                    }
                 }
             });
 

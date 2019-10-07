@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                             break;
                         case R.id.drawable_nav_bookmarks:
+                            startActivity(new Intent(getApplicationContext(), BookmarksActivity.class));
                             break;
                         case R.id.drawable_nav_drafts:
                             selectedFragment = new DraftFragment();
@@ -201,10 +202,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.top_search:
                 startActivity(new Intent(this, SearchableActivity.class));
                 break;
-            case R.id.top_notifications_icon:
-                Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show();
+            //case R.id.top_notifications_icon:
+                //Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show();
              //   onNotifsClicked();
-                break;
+               // break;
         }
 
         return true;

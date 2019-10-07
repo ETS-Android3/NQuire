@@ -8,10 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.adityagunjal.sdl_project.helpers.UserInfo;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
@@ -36,16 +40,40 @@ public class SplashActivity extends AppCompatActivity {
     public static ValueEventListener valueEventListener;
     public static DatabaseReference databaseReference;
 
+    Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        ImageView imageView = findViewById(R.id.background_loading_image);
-        DrawableImageViewTarget drawableImageViewTarget = new DrawableImageViewTarget(imageView);
-        Glide.with(this).load(R.drawable.giphy).into(drawableImageViewTarget);
+        context = this;
 
-        SplashActivity.initApp(this, this);
+        Intent i = getIntent();
+        int flag = i.getIntExtra("EXTRA_FLAG", 0);
+
+        ImageView imageView = findViewById(R.id.background_loading_image);
+        VideoView loadingVideo = findViewById(R.id.loading_video);
+
+        if(flag == 1){
+            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.loading);
+
+            loadingVideo.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
+
+            loadingVideo.setVideoURI(uri);
+            loadingVideo.start();
+            loadingVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    SplashActivity.initApp(context, SplashActivity.this);
+                }
+            });
+        }else{
+            DrawableImageViewTarget drawableImageViewTarget = new DrawableImageViewTarget(imageView);
+            Glide.with(this).load(R.drawable.giphy).into(drawableImageViewTarget);
+            SplashActivity.initApp(context, SplashActivity.this);
+        }
     }
 
     public static void initApp(final Context context, final Activity activity){
