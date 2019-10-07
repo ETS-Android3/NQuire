@@ -56,7 +56,7 @@ public class SplashActivity extends AppCompatActivity {
         VideoView loadingVideo = findViewById(R.id.loading_video);
 
         if(flag == 1){
-            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.loading);
+            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.logo2);
 
             loadingVideo.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.GONE);
@@ -71,7 +71,7 @@ public class SplashActivity extends AppCompatActivity {
             });
         }else{
             DrawableImageViewTarget drawableImageViewTarget = new DrawableImageViewTarget(imageView);
-            Glide.with(this).load(R.drawable.giphy).into(drawableImageViewTarget);
+            Glide.with(this).load(R.drawable.logogif2).into(drawableImageViewTarget);
             SplashActivity.initApp(context, SplashActivity.this);
         }
     }
