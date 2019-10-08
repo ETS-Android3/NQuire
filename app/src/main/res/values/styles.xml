@@ -8,15 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:fontFamily">@font/sourcesansproreg</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
 
     <style name="SearchActivityTheme">
         <item name="android:textColorPrimary">@color/black</item>
     </style>
-
-
-
-
 
 </resources>
