@@ -68,6 +68,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
     EditText editText;
     String question;
 
+    ProgressDialog progressDialog;
 
     HashMap<String, String> answer = new HashMap<>();
     HashMap<String,String> draft = new HashMap<>();
@@ -548,7 +549,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Drafts");
         final String draftID = ref.push().getKey();
         ModelDraft modelDraft = new ModelDraft(SplashActivity.userInfo.getUserID(), questionID,draftID, draft);
-        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Saving Draft");
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
@@ -580,7 +581,10 @@ public class AnswerQuestionActivity extends AppCompatActivity {
                                                         @Override
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             if(task.isSuccessful()) {
-                                                                progressDialog.dismiss();
+                                                                try {
+                                                                    progressDialog.dismiss();
+                                                                }catch (IllegalArgumentException e){ }
+
                                                                 Toast.makeText(AnswerQuestionActivity.this, "Draft Saved Successfully", Toast.LENGTH_SHORT).show();
                                                                 AnswerQuestionActivity.this.finish();
                                                                 FirebaseDatabase.getInstance().getReference("Users")
@@ -647,4 +651,11 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         alert.show();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try{
+            progressDialog.dismiss();
+        }catch (Exception e){ }
+    }
 }

@@ -88,7 +88,18 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
 
         });
 
-
+        holder.edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, AnswerQuestionActivity.class);
+                i.putExtra("EXTRA_FLAG",1);
+                i.putExtra("EXTRA_DRAFT_ID", dID);
+                i.putExtra("EXTRA_QUESTION_ID", qID);
+                i.putExtra("EXTRA_USER_ID",uID);
+                i.putExtra("EXTRA_DRAFT_ANSWER",draft);
+                context.startActivity(i);
+            }
+        });
 
         holder.editDraft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,12 +110,30 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
                 i.putExtra("EXTRA_QUESTION_ID", qID);
                 i.putExtra("EXTRA_USER_ID",uID);
                 i.putExtra("EXTRA_DRAFT_ANSWER",draft);
-
-                //Toast.makeText(context, "Button Clicked", Toast.LENGTH_SHORT).show();
                 context.startActivity(i);
-
             }
 
+        });
+
+        holder.delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Query query = FirebaseDatabase.getInstance().getReference("Drafts/"+draftId);
+
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ModelDraft modelDraft = dataSnapshot.getValue(ModelDraft.class);
+                        draftId = modelDraft.getDraftID();
+                        FirebaseDatabase.getInstance().getReference("Drafts").child(draftId).removeValue();
+                        deleteItem(modelDraft);
+                        Toast.makeText(context, "Draft Deleted", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) { }
+                });
+            }
         });
 
         holder.deleteDraft.setOnClickListener(new View.OnClickListener() {
@@ -116,24 +145,15 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
                             ModelDraft modelDraft = dataSnapshot.getValue(ModelDraft.class);
                             draftId = modelDraft.getDraftID();
-
                             FirebaseDatabase.getInstance().getReference("Drafts").child(draftId).removeValue();
                             deleteItem(modelDraft);
-                        Toast.makeText(context, "Draft Deleted", Toast.LENGTH_SHORT).show();
-
-
+                            Toast.makeText(context, "Draft Deleted", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-
-
+                    public void onCancelled(@NonNull DatabaseError databaseError) { }
                 });
             }
         });
@@ -150,15 +170,17 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
 
         TextView question;
         ImageButton editDraft,deleteDraft;
+        TextView edit, delete;
         public MyViewHolder(View itemView) {
             super(itemView);
 
             itemViewContext = itemView.getContext();
 
-
             question = (TextView) itemView.findViewById(R.id.draft_card_question);
             editDraft = itemView.findViewById(R.id.edit_draft_button);
             deleteDraft = itemView.findViewById(R.id.del_draft_button);
+            edit = itemView.findViewById(R.id.textEdit);
+            delete = itemView.findViewById(R.id.textDelete);
 
         }
     }

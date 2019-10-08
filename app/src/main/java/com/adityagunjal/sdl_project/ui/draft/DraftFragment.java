@@ -124,7 +124,7 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
 
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     ModelDraft modelDraft = ds.getValue(ModelDraft.class);
-
+                    modelDraft.setDraftID(ds.getKey());
                     adapterDraft.addNewItem(modelDraft);
                 }
             }
