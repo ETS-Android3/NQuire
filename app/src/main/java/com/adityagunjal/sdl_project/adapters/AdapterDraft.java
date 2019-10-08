@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adityagunjal.sdl_project.AnswerQuestionActivity;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.ShowAnswerActivity;
+import com.adityagunjal.sdl_project.helpers.UserInfo;
 import com.adityagunjal.sdl_project.models.ModelDraft;
 import com.adityagunjal.sdl_project.models.ModelFeed;
 import com.adityagunjal.sdl_project.models.ModelUser;
@@ -44,6 +45,7 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
     String draftId ;
     Context context;
     ArrayList<ModelDraft> modelDraftArrayList;
+    DatabaseReference databaseReference;
 
     public AdapterDraft(Context context, ArrayList<ModelDraft> modelDraftArrayList){
         this.context = context;
@@ -71,7 +73,7 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
       // Toast.makeText(context, "d"+dID + "u "+uID+"q"+ qID, Toast.LENGTH_SHORT).show();
         draftId = modelDraft.getDraftID();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions/"+qID+"/text");
-
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -127,6 +129,22 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
                         draftId = modelDraft.getDraftID();
                         FirebaseDatabase.getInstance().getReference("Drafts").child(draftId).removeValue();
                         deleteItem(modelDraft);
+                        databaseReference.child("Users/"+uID).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
+                                modelUser.draftsArrayList.remove(draftId);
+                                FirebaseDatabase.getInstance().getReference("Users/"+uID).setValue(modelUser);
+                                notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        //FirebaseDatabase.getInstance().getReference("Users/"+uID+"/"+"draftsArrayList/"+dID).removeValue();
                         Toast.makeText(context, "Draft Deleted", Toast.LENGTH_SHORT).show();
                     }
 
@@ -149,6 +167,21 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
                             draftId = modelDraft.getDraftID();
                             FirebaseDatabase.getInstance().getReference("Drafts").child(draftId).removeValue();
                             deleteItem(modelDraft);
+                        databaseReference.child("Users/"+uID).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
+                                modelUser.draftsArrayList.remove(draftId);
+                                FirebaseDatabase.getInstance().getReference().setValue(modelUser);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                            notifyDataSetChanged();
                             Toast.makeText(context, "Draft Deleted", Toast.LENGTH_SHORT).show();
                     }
 
@@ -198,5 +231,6 @@ public class AdapterDraft extends RecyclerView.Adapter<AdapterDraft.MyViewHolder
     public void deleteAll()
     {
         modelDraftArrayList.clear();
+        notifyDataSetChanged();
     }
 }
