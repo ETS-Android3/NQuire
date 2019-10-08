@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,6 +24,8 @@ import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelFeed;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
 import com.adityagunjal.sdl_project.models.ModelUser;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,6 +47,9 @@ public class HomeFragment extends Fragment {
 
     LinearLayoutManager layoutManager;
 
+    RelativeLayout loadingLayout;
+    ImageView loadingImage;
+
     int pageLimit = 8;
     long offset = 0;
 
@@ -55,6 +63,12 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view);
+
+        loadingLayout = view.findViewById(R.id.loading_layout);
+        loadingImage = view.findViewById(R.id.home_image_loading);
+
+        DrawableImageViewTarget drawableImageViewTarget = new DrawableImageViewTarget(loadingImage);
+        Glide.with(getActivity()).load(R.drawable.page_loadig).into(drawableImageViewTarget);
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -108,6 +122,7 @@ public class HomeFragment extends Fragment {
 
                                                             adapterFeed.addNewItem(modelFeed);
                                                             offset = (long) modelAnswer.getTimestamp();
+                                                            loadingLayout.setVisibility(View.GONE);
                                                         }
 
                                                         @Override

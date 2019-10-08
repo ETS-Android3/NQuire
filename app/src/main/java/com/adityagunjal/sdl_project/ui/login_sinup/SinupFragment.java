@@ -104,6 +104,13 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
             registrationID.requestFocus();
             return;
         }
+
+        if(!validateRID(rid)){
+            registrationID.setError("Invalid Registration ID !");
+            registrationID.requestFocus();
+            return;
+        }
+
         if(pword.isEmpty() || pword.length() < 6){
             password.setError("Password should be at least 6 characters long !");
             password.requestFocus();
@@ -173,4 +180,19 @@ public class SinupFragment extends Fragment implements Button.OnClickListener{
                     }
                 });
     }
+
+    boolean validateRID(String rid){
+        rid = rid.toLowerCase();
+        if(rid.length() != 11)
+            return false;
+        if(rid.charAt(0) != 'c' && rid.charAt(0) != 'e' && rid.charAt(0) != 'i')
+            return false;
+        if(!rid.substring(1, 3).equals("2k") || !rid.substring(5, 7).equals("10"))
+            return false;
+        int t = Integer.parseInt(rid.substring(3, 5));
+        if(t < 16 || t > 19)
+            return  false;
+        return true;
+    }
+
 }

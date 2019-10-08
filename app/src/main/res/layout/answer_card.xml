@@ -87,10 +87,11 @@
 
                         <ImageView
                             android:layout_gravity="center_horizontal"
-                            android:visibility="gone"
                             android:id="@+id/card_answer_image"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:minHeight="150dp"
+                            />
 
                         <TextView
                             android:id="@+id/card_answer_text"

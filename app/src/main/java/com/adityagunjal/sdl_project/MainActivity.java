@@ -8,7 +8,9 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import android.app.AlertDialog;
 import android.app.Application;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -103,7 +105,29 @@ public class MainActivity extends AppCompatActivity {
             drawer.closeDrawer(GravityCompat.START);
         }else {
             if(currentFragment.getClass().equals(HomeFragment.class)){
-                super.onBackPressed();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this,android.R.style.Theme_Material_Light_Dialog_Alert);
+
+                builder.setTitle("Exit");
+                builder.setMessage("Are you sure, you want to leave?");
+
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        MainActivity.this.finish();
+                    }
+                });
+
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
             }
             else{
                 bottomNavigation.setSelectedItemId(R.id.nav_home);
@@ -127,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                             break;
                         case R.id.drawable_nav_bookmarks:
-                            startActivity(new Intent(getApplicationContext(), BookmarksActivity.class));
+                            //startActivity(new Intent(getApplicationContext(), BookmarksActivity.class));
                             break;
                         case R.id.drawable_nav_drafts:
                             selectedFragment = new DraftFragment();

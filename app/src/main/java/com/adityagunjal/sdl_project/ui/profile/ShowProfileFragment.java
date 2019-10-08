@@ -297,7 +297,7 @@ public class ShowProfileFragment extends Fragment implements CustomeOnBackPresse
         }
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 25, byteArrayOutputStream);
 
         byte[] data = byteArrayOutputStream.toByteArray();
 

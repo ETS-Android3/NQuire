@@ -28,6 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.security.Timestamp;
@@ -65,6 +66,8 @@ public class ChatActivity extends AppCompatActivity {
         if(i.getIntExtra("EXTRA_FLAG", 0) == 1){
             modelUser = (ModelUser)i.getSerializableExtra("EXTRA_USER");
             userID = i.getStringExtra("EXTRA_USER_ID");
+            modelUser.setUserID(userID);
+
             modelChat = (ModelChat) i.getSerializableExtra("EXTRA_CHAT");
             chatID = modelChat.getChatID();
 
@@ -154,6 +157,34 @@ public class ChatActivity extends AppCompatActivity {
         modelMessage.setMessageID(chatRef.getKey());
 
         chatRef.setValue(modelMessage);
+    }
+
+    public void showProfile(View view){
+        final Intent i = new Intent(this, ProfileActivity.class);
+        try{
+            i.putExtra("EXTRA_USER", modelUser);
+            i.putExtra("EXTRA_USER_ID", modelUser.getUserID());
+            this.startActivity(i);
+            finish();
+        }catch (NullPointerException e){
+            FirebaseDatabase.getInstance().getReference("Users")
+                    .child(modelChatUser.getUserID())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            ModelUser modelUser = dataSnapshot.getValue(ModelUser.class);
+                            i.putExtra("EXTRA_USER", modelUser);
+                            i.putExtra("EXTRA_USER_ID", modelChatUser.getUserID());
+                            ChatActivity.this.startActivity(i);
+                            ChatActivity.this.finish();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }
     }
 
 }

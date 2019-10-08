@@ -100,9 +100,12 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
     }
 
     public void setInfo(){
+
+        String dateString = modelAnswer.getDate();
+
         questionText.setText(modelQuestion.getText());
         username.setText(modelUser.getUsername());
-        date.setText(modelAnswer.getDate());
+        date.setText(dateString.substring(0, 16) + " " + dateString.substring(dateString.length() - 5, dateString.length()));
         upvoteCount.setText(Integer.toString(modelAnswer.getUpvotes()));
         downvoteCount.setText(Integer.toString(modelAnswer.getDownvotes()));
         commentCount.setText(Integer.toString(modelAnswer.getComments()));

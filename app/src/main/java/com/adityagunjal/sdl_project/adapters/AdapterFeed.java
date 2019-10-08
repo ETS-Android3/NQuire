@@ -178,6 +178,8 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.MyViewHolder> 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.topMargin = (int)(factor * 10);
             holder.answer.setLayoutParams(layoutParams);
+        } else {
+            holder.answerImage.setVisibility(View.GONE);
         }
 
         holder.answer.setText(answerText + " ...");

@@ -204,6 +204,38 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(AnswerQuestionActivity.this,android.R.style.Theme_Material_Light_Dialog_Alert);
+
+        builder.setTitle("Confirm");
+        builder.setMessage("Are you sure, you want to leave?");
+
+        builder.setPositiveButton("Save As Draft", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                saveAsDraft();
+                dialog.dismiss();
+                AnswerQuestionActivity.this.finish();
+            }
+        });
+
+        builder.setNegativeButton("Clear", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+
+                AnswerQuestionActivity.this.finish();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     public void onBackPressed(View view) {
        saveDraftConfirm();
     }
@@ -590,9 +622,6 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
     void saveDraftConfirm()
     {
-
-
-
         AlertDialog.Builder builder = new AlertDialog.Builder(AnswerQuestionActivity.this,android.R.style.Theme_Material_Light_Dialog_Alert);
 
         builder.setTitle("Confirm");
@@ -602,7 +631,6 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
             public void onClick(DialogInterface dialog, int which) {
                 saveAsDraft();
-
                 dialog.dismiss();
             }
         });
@@ -611,24 +639,12 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-
                 dialog.dismiss();
             }
         });
 
         AlertDialog alert = builder.create();
         alert.show();
-    }
-
-    void showRemoveImageDialog()
-    {
-
-    }
-
-    void deleteImage(String storageUrl)
-    {
-
     }
 
 }

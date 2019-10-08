@@ -6,7 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,8 @@ import com.adityagunjal.sdl_project.models.ModelChat;
 import com.adityagunjal.sdl_project.models.ModelChatUser;
 import com.adityagunjal.sdl_project.models.ModelMessage;
 import com.adityagunjal.sdl_project.models.ModelUser;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,6 +40,9 @@ public class ChatFragment extends Fragment {
     ArrayList<ModelChatUser> modelChatUserArrayList = new ArrayList<>();
     AdapterChatUser adapterChatUser;
 
+    RelativeLayout loadingLayout;
+    ImageView loadingImage;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -44,6 +51,12 @@ public class ChatFragment extends Fragment {
         recyclerView = view.findViewById(R.id.chat_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapterChatUser = new AdapterChatUser(getActivity(), modelChatUserArrayList);
+
+        loadingLayout = view.findViewById(R.id.loading_layout);
+        loadingImage = view.findViewById(R.id.home_image_loading);
+
+        DrawableImageViewTarget drawableImageViewTarget = new DrawableImageViewTarget(loadingImage);
+        Glide.with(getActivity()).load(R.drawable.page_loadig).into(drawableImageViewTarget);
 
         recyclerView.setAdapter(adapterChatUser);
         populateRecyclerView();
@@ -87,6 +100,7 @@ public class ChatFragment extends Fragment {
                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                     modelChatUser.setUsername(dataSnapshot.getValue(String.class));
                                                                     adapterChatUser.addNewUser(modelChatUser);
+                                                                    loadingLayout.setVisibility(View.GONE);
                                                                 }
 
                                                                 @Override
@@ -103,6 +117,7 @@ public class ChatFragment extends Fragment {
                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                     modelChatUser.setUsername(dataSnapshot.getValue(String.class));
                                                                     adapterChatUser.addNewUser(modelChatUser);
+                                                                    loadingLayout.setVisibility(View.GONE);
                                                                 }
 
                                                                 @Override

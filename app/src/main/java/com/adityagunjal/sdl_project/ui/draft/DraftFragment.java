@@ -69,29 +69,7 @@ public class DraftFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Query query = FirebaseDatabase.getInstance().getReference("Drafts");
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    ModelDraft modelDraft = ds.getValue(ModelDraft.class);
-                    dID = modelDraft.getDraftID();
-                    qID = modelDraft.getQuestionID();
-                    uID = modelDraft.getUserID();
-                    draft = modelDraft.getDraft();
-
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-       View ans = inflater.inflate(R.layout.activity_answer_question, container,false);
+        View ans = inflater.inflate(R.layout.activity_answer_question, container,false);
         answerLinearLayout = ans.findViewById(R.id.answer_linear_layout);
         View draft_card = inflater.inflate(R.layout.draft_card, container, false);
 

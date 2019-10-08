@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.adapters.AdapterQuestion;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +43,9 @@ public class RecentFragment extends Fragment {
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
 
+    RelativeLayout loadingLayout;
+    ImageView loadingImage;
+
     long offset = 0;
     final int pageLimit = 20;
 
@@ -50,6 +57,12 @@ public class RecentFragment extends Fragment {
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         layoutManager = new LinearLayoutManager(getActivity());
+
+        loadingLayout = view.findViewById(R.id.loading_layout);
+        loadingImage = view.findViewById(R.id.home_image_loading);
+
+        DrawableImageViewTarget drawableImageViewTarget = new DrawableImageViewTarget(loadingImage);
+        Glide.with(getActivity()).load(R.drawable.page_loadig).into(drawableImageViewTarget);
 
         recyclerView = view.findViewById(R.id.recent_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
@@ -87,6 +100,7 @@ public class RecentFragment extends Fragment {
                                     adapterQuestion.addNewItem(modelQuestion);
                                     offset = (long) modelQuestion.getTimestamp();
 
+                                    loadingLayout.setVisibility(View.GONE);
                                 }
 
                                 @Override
