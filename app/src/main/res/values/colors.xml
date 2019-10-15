@@ -20,6 +20,8 @@
     <color name="gradEnd">#02CCEB</color>
     <color name="gradStart">#00B8D4</color>
 
+    <color name="placeholder_bg">#DDDDDD</color>
+
 
     <color name="login_background">#FFFFFF</color>
     <color name="splash_background">#FFFFFF</color>

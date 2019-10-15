@@ -24,6 +24,7 @@ import com.adityagunjal.sdl_project.models.ModelAnswer;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.adityagunjal.sdl_project.models.ModelUsernameEmail;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,6 +46,7 @@ public class AllAnswersFragment extends Fragment implements View.OnClickListener
     TextView questionText, askedBy, answerButtonText;
     ImageView answerButton;
 
+    ShimmerFrameLayout shimmerFrameLayout;
 
     int pageLimit = 10;
     String offset;
@@ -62,6 +64,8 @@ public class AllAnswersFragment extends Fragment implements View.OnClickListener
         modelQuestion = (ModelQuestion) bundle.getSerializable("ModelQuestion");
 
         View view = inflater.inflate(R.layout.fragment_all_answers, container, false);
+
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_answers_container);
 
         recyclerView = view.findViewById(R.id.all_answers_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -116,6 +120,7 @@ public class AllAnswersFragment extends Fragment implements View.OnClickListener
                     ModelAnswer modelAnswer = ds.getValue(ModelAnswer.class);
                     modelAnswer.setAnswerID(ds.getKey());
                     adapterAnswer.addNewItem(modelAnswer);
+                    shimmerFrameLayout.setVisibility(View.GONE);
                 }
             }
 

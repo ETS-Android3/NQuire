@@ -26,6 +26,7 @@ import com.adityagunjal.sdl_project.models.ModelQuestion;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,6 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 
 public class HomeFragment extends Fragment {
 
@@ -47,11 +49,11 @@ public class HomeFragment extends Fragment {
 
     LinearLayoutManager layoutManager;
 
-    RelativeLayout loadingLayout;
-    ImageView loadingImage;
+    ShimmerFrameLayout shimmerFrameLayout;
 
     int pageLimit = 8;
     long offset = 0;
+    long cnt = 0;
 
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
@@ -64,11 +66,8 @@ public class HomeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
 
-        loadingLayout = view.findViewById(R.id.loading_layout);
-        loadingImage = view.findViewById(R.id.home_image_loading);
-
-        DrawableImageViewTarget drawableImageViewTarget = new DrawableImageViewTarget(loadingImage);
-        Glide.with(getActivity()).load(R.drawable.page_loadig).into(drawableImageViewTarget);
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_view_container);
+        shimmerFrameLayout.startShimmer();
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -92,6 +91,7 @@ public class HomeFragment extends Fragment {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                cnt = dataSnapshot.getChildrenCount();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     String answerID = ds.getKey();
                     final ModelAnswer modelAnswer = ds.getValue(ModelAnswer.class);
@@ -122,7 +122,11 @@ public class HomeFragment extends Fragment {
 
                                                             adapterFeed.addNewItem(modelFeed);
                                                             offset = (long) modelAnswer.getTimestamp();
-                                                            loadingLayout.setVisibility(View.GONE);
+                                                            cnt--;
+                                                            if(cnt < 4){
+                                                                shimmerFrameLayout.setVisibility(View.GONE);
+                                                                cnt = -1;
+                                                            }
                                                         }
 
                                                         @Override

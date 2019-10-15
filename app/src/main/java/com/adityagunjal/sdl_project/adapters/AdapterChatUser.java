@@ -15,6 +15,7 @@ import com.adityagunjal.sdl_project.R;
 import com.adityagunjal.sdl_project.models.ModelChatUser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -22,6 +23,7 @@ public class AdapterChatUser extends RecyclerView.Adapter<AdapterChatUser.MyView
 
     Context context;
     ArrayList<ModelChatUser> modelChatUserArrayList;
+    ArrayList<String> chatUserID = new ArrayList<>();
 
     public AdapterChatUser(Context context, ArrayList<ModelChatUser> modelChatUserArrayList){
         this.context = context;
@@ -85,7 +87,13 @@ public class AdapterChatUser extends RecyclerView.Adapter<AdapterChatUser.MyView
     }
 
     public void addNewUser(ModelChatUser modelChatUser){
-        modelChatUserArrayList.add(modelChatUser);
+        if(!chatUserID.contains(modelChatUser.getChatID())){
+            modelChatUserArrayList.add(modelChatUser);
+            chatUserID.add(modelChatUser.getChatID());
+        }else{
+            int index = chatUserID.indexOf(modelChatUser.getChatID());
+            modelChatUserArrayList.set(index, modelChatUser);
+        }
         notifyDataSetChanged();
     }
 }

@@ -169,6 +169,7 @@ public class OneAnswerFragment extends Fragment implements View.OnClickListener 
                 layoutParams.bottomMargin = (int)(factor * 7);
                 final ImageView imageView = new ImageView(answerLinearLayout.getContext());
                 imageView.setLayoutParams(layoutParams);
+                imageView.setMinimumHeight((int)(factor * 150));
                 answerLinearLayout.addView(imageView);
 
                 FirebaseStorage.getInstance().getReference(answerElement.getValue())

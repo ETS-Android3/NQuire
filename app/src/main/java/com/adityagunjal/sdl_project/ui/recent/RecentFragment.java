@@ -20,6 +20,7 @@ import com.adityagunjal.sdl_project.adapters.AdapterQuestion;
 import com.adityagunjal.sdl_project.models.ModelQuestion;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -38,15 +39,15 @@ public class RecentFragment extends Fragment {
     AdapterQuestion adapterQuestion;
     LinearLayoutManager layoutManager;
 
+    ShimmerFrameLayout shimmerFrameLayout;
+
     String userID;
 
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
 
-    RelativeLayout loadingLayout;
-    ImageView loadingImage;
-
     long offset = 0;
+    long cnt = 0;
     final int pageLimit = 20;
 
     @Nullable
@@ -56,13 +57,9 @@ public class RecentFragment extends Fragment {
 
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_questions_container);
+
         layoutManager = new LinearLayoutManager(getActivity());
-
-        loadingLayout = view.findViewById(R.id.loading_layout);
-        loadingImage = view.findViewById(R.id.home_image_loading);
-
-        DrawableImageViewTarget drawableImageViewTarget = new DrawableImageViewTarget(loadingImage);
-        Glide.with(getActivity()).load(R.drawable.page_loadig).into(drawableImageViewTarget);
 
         recyclerView = view.findViewById(R.id.recent_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
@@ -86,6 +83,7 @@ public class RecentFragment extends Fragment {
         getQuestions.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                cnt = dataSnapshot.getChildrenCount();
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     String qID = ds.getKey();
                     final ModelQuestion modelQuestion = ds.getValue(ModelQuestion.class);
@@ -99,8 +97,12 @@ public class RecentFragment extends Fragment {
                                     modelQuestion.setUsername(userName);
                                     adapterQuestion.addNewItem(modelQuestion);
                                     offset = (long) modelQuestion.getTimestamp();
+                                    cnt--;
+                                    if(cnt < 10){
+                                        shimmerFrameLayout.setVisibility(View.GONE);
+                                        cnt = -1;
+                                    }
 
-                                    loadingLayout.setVisibility(View.GONE);
                                 }
 
                                 @Override

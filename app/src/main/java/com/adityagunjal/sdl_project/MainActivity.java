@@ -226,11 +226,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.top_search:
                 startActivity(new Intent(this, SearchableActivity.class));
                 break;
-                case R.id.top_notifications_icon:
-                    onNotifsClicked();
-                 Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show();
-
-               break;
+            case R.id.top_notifications_icon:
+                Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show();
+                break;
         }
 
         return true;
@@ -266,9 +264,4 @@ public class MainActivity extends AppCompatActivity {
         TextView titleText = findViewById(R.id.title);
         titleText.setText(title);
     }
-
-    public void onNotifsClicked(){
-
-    }
-
 }

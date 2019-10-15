@@ -26,10 +26,12 @@ import com.adityagunjal.sdl_project.models.ModelMessage;
 import com.adityagunjal.sdl_project.models.ModelUser;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -40,23 +42,18 @@ public class ChatFragment extends Fragment {
     ArrayList<ModelChatUser> modelChatUserArrayList = new ArrayList<>();
     AdapterChatUser adapterChatUser;
 
-    RelativeLayout loadingLayout;
-    ImageView loadingImage;
+    ShimmerFrameLayout shimmerFrameLayout;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_chat_container);
+
         recyclerView = view.findViewById(R.id.chat_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapterChatUser = new AdapterChatUser(getActivity(), modelChatUserArrayList);
-
-        loadingLayout = view.findViewById(R.id.loading_layout);
-        loadingImage = view.findViewById(R.id.home_image_loading);
-
-        DrawableImageViewTarget drawableImageViewTarget = new DrawableImageViewTarget(loadingImage);
-        Glide.with(getActivity()).load(R.drawable.page_loadig).into(drawableImageViewTarget);
 
         recyclerView.setAdapter(adapterChatUser);
         populateRecyclerView();
@@ -67,21 +64,22 @@ public class ChatFragment extends Fragment {
     public void populateRecyclerView(){
 
         final ArrayList<String> chats = SplashActivity.userInfo.getModelUser().getChatsList();
-        //Toast.makeText(getActivity(), String.valueOf(chats), Toast.LENGTH_SHORT).show();
+
         if(chats != null){
             for(int i = 0; i < chats.size(); i++){
                 final String chatID = chats.get(i);
-                FirebaseDatabase.getInstance().getReference("Chats")
-                        .child(chatID)
-                        .orderByChild("timestamp")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                Query query = FirebaseDatabase.getInstance().getReference("Chats")
+                                    .child(chatID).orderByChild("timestamp");
+
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 final ModelChat modelChat = dataSnapshot.getValue(ModelChat.class);
                                 final ModelChatUser modelChatUser = new ModelChatUser();
                                 dataSnapshot.getRef().child("Messages").orderByChild("timestamp")
                                         .limitToLast(1)
-                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        .addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 ModelMessage message = new ModelMessage();
@@ -100,7 +98,7 @@ public class ChatFragment extends Fragment {
                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                     modelChatUser.setUsername(dataSnapshot.getValue(String.class));
                                                                     adapterChatUser.addNewUser(modelChatUser);
-                                                                    loadingLayout.setVisibility(View.GONE);
+                                                                    shimmerFrameLayout.setVisibility(View.GONE);
                                                                 }
 
                                                                 @Override
@@ -117,7 +115,7 @@ public class ChatFragment extends Fragment {
                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                     modelChatUser.setUsername(dataSnapshot.getValue(String.class));
                                                                     adapterChatUser.addNewUser(modelChatUser);
-                                                                    loadingLayout.setVisibility(View.GONE);
+                                                                    shimmerFrameLayout.setVisibility(View.GONE);
                                                                 }
 
                                                                 @Override
