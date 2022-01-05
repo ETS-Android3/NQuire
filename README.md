@@ -1,1 +1,1 @@
-# SDL-Project
+# Used Android Studio and Firebase Database
